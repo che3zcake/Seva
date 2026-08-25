@@ -3,7 +3,7 @@ import { evaluateReadiness } from '../domain/readinessEngine.js';
 import { detectIssues } from '../domain/issueDetector.js';
 import { findService } from '../data/services.js';
 import { doc, emptyProfile, profile } from './helpers.js';
-import type { ServiceDefinition } from '@taiyaar/shared';
+import type { ServiceDefinition } from '@seva/shared';
 
 const service = findService('income-certificate') as ServiceDefinition;
 

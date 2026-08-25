@@ -12,7 +12,7 @@ The founding principle, stated by the founder:
 ## The reframe that dissolves most of the work
 
 The principle is **"we don't read the file"**, not **"we don't know your name"**.
-A courier reads the address label. Taiyaar legitimately holds the citizen's
+A courier reads the address label. Seva legitimately holds the citizen's
 name — they typed it into the form, and DigiLocker returns `name`, `dob`,
 `gender` and `digilockerid` in the OAuth token response whether you want them or
 not. Designs that spend their whole budget encrypting the *label* are inverted
@@ -41,7 +41,7 @@ Three architectures were designed and attacked. Two died:
   arrives in cleartext through the API you kept.
 - **Blind Vault** (E2E-encrypted blob storage) — builds a three-level key
   hierarchy and a recovery story to protect a payload its own design argues
-  Taiyaar should not keep. Defeated by an evicted IndexedDB key on a 2GB Android
+  Seva should not keep. Defeated by an evicted IndexedDB key on a 2GB Android
   long before any attacker appears.
 
 Why store the URI is wrong: `in.gov.pan-PANCR-ABCDE1234F` is the spec's own
@@ -51,7 +51,7 @@ Store `crypto.randomUUID()`.
 
 ## The honest residual
 
-Taiyaar is content-blind. It is **not identity-blind, and never will be.** Say
+Seva is content-blind. It is **not identity-blind, and never will be.** Say
 this out loud rather than letting someone find it:
 
 1. **It knows your name and date of birth.** You typed the name in; DigiLocker
@@ -67,14 +67,14 @@ this out loud rather than letting someone find it:
    of requirements you could not satisfy is definitionally a list of things you
    lack.
 4. **The server serves the JavaScript.** Every client-side guarantee rests on
-   Taiyaar shipping honest code. Today's audit does not bind tomorrow's deploy.
-   Unsolved for all browser-delivered privacy claims, not specific to Taiyaar.
+   Seva shipping honest code. Today's audit does not bind tomorrow's deploy.
+   Unsolved for all browser-delivered privacy claims, not specific to Seva.
 5. **The session id is an unauthenticated bearer string.** `sessionIdFrom()`
    trusts the `x-session-id` header verbatim and `GET /api/session` returns
    everything. Harmless for an in-memory map of synthetic data; **unacceptable
    the moment anything durable lands.** See Phase 4.
 6. **The extension is the largest content-reading surface in the repo.** It runs
-   on pages Taiyaar does not control. Narrowed to `*.gov.in` / `*.nic.in`, but
+   on pages Seva does not control. Narrowed to `*.gov.in` / `*.nic.in`, but
    this deserves to be on the diagram rather than omitted from it.
 
 ## Phases
@@ -131,7 +131,7 @@ better than tesseract does. Ask them.**
 - **Does the extension stay?** It is the largest content-reading surface, and
   it is invisible to the DevTools verification story by design.
 - **Does anything downstream rely on the readiness verdict** — a department, a
-  "Taiyaar-verified" badge? If yes, stop: moving comparison to the browser makes
+  "Seva-verified" badge? If yes, stop: moving comparison to the browser makes
   the verdict client-asserted.
 - **Citizen on their own phone, or an operator at a CSC / Jan Seva Kendra?**
   Every device-local guarantee resolves to "the operator's desktop" in the

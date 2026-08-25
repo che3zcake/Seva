@@ -1,5 +1,5 @@
 import { FolderLock, HelpCircle, Upload, Eye, RefreshCw, AlertTriangle } from 'lucide-react';
-import type { Document, DocumentIssue, DocumentRequirement, ReadinessItem } from '@taiyaar/shared';
+import type { Document, DocumentIssue, DocumentRequirement, ReadinessItem } from '@seva/shared';
 import { Badge, Button, Card } from '../../components/ui/Primitives';
 import { StatusIndicator, STATUS_META } from '../../components/ui/Status';
 

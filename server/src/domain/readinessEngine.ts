@@ -6,7 +6,7 @@ import type {
   ReadinessItem,
   ReadinessResult,
   ServiceDefinition,
-} from '@taiyaar/shared';
+} from '@seva/shared';
 import { bestMatch } from './documentMatcher.js';
 
 export interface ReadinessInput {

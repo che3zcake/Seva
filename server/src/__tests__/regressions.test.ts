@@ -6,7 +6,7 @@ import { checkSubmittable } from '../services/applicationService.js';
 import { findService } from '../data/services.js';
 import { createApp } from '../app.js';
 import { doc, profile } from './helpers.js';
-import type { Application, ReadinessResult, ServiceDefinition } from '@taiyaar/shared';
+import type { Application, ReadinessResult, ServiceDefinition } from '@seva/shared';
 
 const service = findService('income-certificate') as ServiceDefinition;
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { ServiceSummary } from '@taiyaar/shared';
+import type { ServiceSummary } from '@seva/shared';
 import { SERVICES, findService } from '../data/services.js';
 import { NotFound } from '../middleware/errorHandler.js';
 

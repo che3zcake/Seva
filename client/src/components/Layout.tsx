@@ -26,7 +26,7 @@ export function Layout({ children }: { children: ReactNode }) {
             >
               <ShieldCheck size={18} />
             </span>
-            <span className="font-display text-xl tracking-tight">Taiyaar</span>
+            <span className="font-display text-xl tracking-tight">Seva</span>
           </Link>
           <span className="rounded-full border border-line bg-paper px-3 py-1 text-xs font-medium text-muted">
             Prototype
@@ -42,7 +42,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="mx-auto max-w-3xl space-y-3 px-5 py-8 text-sm text-muted">
           <p>{PROTOTYPE_DISCLOSURE}</p>
           <p>
-            Taiyaar is an independent demonstration project. It is not affiliated with, endorsed
+            Seva is an independent demonstration project. It is not affiliated with, endorsed
             by, or connected to any government body.
           </p>
           <p>

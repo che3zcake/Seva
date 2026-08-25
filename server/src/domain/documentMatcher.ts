@@ -1,4 +1,4 @@
-import type { Document, DocumentRequirement } from '@taiyaar/shared';
+import type { Document, DocumentRequirement } from '@seva/shared';
 
 /**
  * Decides which of the citizen's documents may be used for a requirement.

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Clock, FileText, Lock } from 'lucide-react';
-import type { ServiceSummary } from '@taiyaar/shared';
+import type { ServiceSummary } from '@seva/shared';
 import { apiGet } from '../api/client';
 import { useAsync } from '../lib/hooks';
 import { Badge, Card, ErrorNotice, LoadingScreen, PageHeader } from '../components/ui/Primitives';

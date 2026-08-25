@@ -1,5 +1,5 @@
-import type { Application, Document, DocumentIssue, SessionState } from '@taiyaar/shared';
-import type { CitizenProfile } from '@taiyaar/shared';
+import type { Application, Document, DocumentIssue, SessionState } from '@seva/shared';
+import type { CitizenProfile } from '@seva/shared';
 import { createEmptyProfile } from '../data/demoCitizen.js';
 
 /**

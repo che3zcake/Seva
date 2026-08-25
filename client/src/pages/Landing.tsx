@@ -117,7 +117,7 @@ export function Landing() {
 
           <Card className="border-brand/30 bg-brand-soft/40 p-5">
             <h3 className="text-base font-semibold uppercase tracking-wide text-brand-dark">
-              With Taiyaar
+              With Seva
             </h3>
             <ol className="mt-4 space-y-2 text-sm">
               {INSTEAD.map((line, index) => (
@@ -137,7 +137,7 @@ export function Landing() {
         <Card className="p-6">
           <h2 className="text-xl">What this prototype is</h2>
           <p className="mt-3 text-muted">
-            Taiyaar is a preparation layer that sits before an application, not another portal and
+            Seva is a preparation layer that sits before an application, not another portal and
             not a chatbot. This build demonstrates one service end to end using invented data: the
             requirements, the locker, the documents and the submission are all simulated.
           </p>

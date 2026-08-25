@@ -1,15 +1,15 @@
-# Taiyaar — a government application readiness layer
+# Seva — a government application readiness layer
 
 **Know what you need before you start.**
 
-Taiyaar is a preparation layer that sits *before* a government application form.
+Seva is a preparation layer that sits *before* a government application form.
 It tells a citizen what the application will ask for, checks which documents
 they already have, finds what is missing, flags problems, and only then lets
 them open the form.
 
 > **This is a prototype for demonstration.** Government services, documents,
 > accounts and DigiLocker data shown here are simulated using synthetic data.
-> Taiyaar is an independent demonstration project, not affiliated with,
+> Seva is an independent demonstration project, not affiliated with,
 > endorsed by, or connected to any government body. Nothing is submitted
 > anywhere.
 
@@ -38,7 +38,7 @@ it, come back, and often start over. The time is not lost to *filling* the
 form — it is lost to *discovering the requirement too late*.
 
 ```
-Today                          With Taiyaar
+Today                          With Seva
 ─────                          ────────────
 Find service                   Choose service
 Start huge form                Understand requirements
@@ -283,9 +283,9 @@ The network call lives in the service worker rather than the content script, so
 the request carries the extension's own origin and the government portal is
 never involved in it.
 
-`src/link.js` runs only on Taiyaar's own pages and copies the session id the
+`src/link.js` runs only on Seva's own pages and copies the session id the
 site already stores locally, so the panel answers against your real checklist.
-Taiyaar's own pages are skipped via a `<meta name="taiyaar-app">` marker — apart
+Seva's own pages are skipped via a `<meta name="seva-app">` marker — apart
 from `/demo/government-portal`, which exists to be helped.
 
 The backend hook it uses:

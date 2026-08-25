@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Check, FolderLock, ShieldCheck } from 'lucide-react';
-import type { DigiLockerAccount, DigiLockerDocument } from '@taiyaar/shared';
+import type { DigiLockerAccount, DigiLockerDocument } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Badge, Button, Spinner } from '../../components/ui/Primitives';
 import { useApp } from '../../state/AppContext';

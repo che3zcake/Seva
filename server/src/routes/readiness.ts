@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import type { ReadinessItem } from '@taiyaar/shared';
+import type { ReadinessItem } from '@seva/shared';
 import { findService } from '../data/services.js';
 import { readinessFor } from '../domain/sessionReadiness.js';
 import { sessionRepository, setProfile, markIssueResolved } from '../repositories/sessionRepository.js';

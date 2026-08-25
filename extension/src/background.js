@@ -2,7 +2,7 @@
  * The only part of the extension that talks to the network.
  *
  * Content scripts run in the page's origin, so a fetch from there would be a
- * cross-origin request to the Taiyaar API. Doing it here instead means the
+ * cross-origin request to the Seva API. Doing it here instead means the
  * request carries the extension's host permissions and never involves the
  * government portal's origin at all.
  */
@@ -30,8 +30,8 @@ async function checkPage(detectedRequirements) {
   });
 
   if (!response.ok) {
-    let message = 'Taiyaar could not check this page.';
-    let action = 'Make sure Taiyaar is running, then try again.';
+    let message = 'Seva could not check this page.';
+    let action = 'Make sure Seva is running, then try again.';
     try {
       const body = await response.json();
       if (body?.error?.message) message = body.error.message;
@@ -46,20 +46,20 @@ async function checkPage(detectedRequirements) {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type === 'taiyaar:check') {
+  if (message?.type === 'seva:check') {
     checkPage(message.detectedRequirements)
       .then(sendResponse)
       .catch((error) =>
         sendResponse({
           ok: false,
-          message: 'Taiyaar is not reachable.',
+          message: 'Seva is not reachable.',
           action: `Start it with "npm run dev", or set the address in the extension popup. (${error.message})`,
         }),
       );
     return true; // keep the channel open for the async reply
   }
 
-  if (message?.type === 'taiyaar:link') {
+  if (message?.type === 'seva:link') {
     chrome.storage.local.set({ sessionId: message.sessionId }).then(() => sendResponse({ ok: true }));
     return true;
   }

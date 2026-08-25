@@ -1,4 +1,4 @@
-import type { DigiLockerDocument } from '@taiyaar/shared';
+import type { DigiLockerDocument } from '@seva/shared';
 import { DEMO_ADDRESS, DEMO_CITIZEN_LONG_NAME, DEMO_CITIZEN_NAME } from './demoCitizen.js';
 
 /**

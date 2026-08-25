@@ -1,4 +1,4 @@
-import type { CitizenProfile, Document, DocumentType } from '@taiyaar/shared';
+import type { CitizenProfile, Document, DocumentType } from '@seva/shared';
 
 export function doc(
   id: string,

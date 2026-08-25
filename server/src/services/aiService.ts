@@ -3,7 +3,7 @@ import type {
   DocumentIssue,
   Requirement,
   ServiceDefinition,
-} from '@taiyaar/shared';
+} from '@seva/shared';
 
 export interface ExplainRequirementInput {
   service: ServiceDefinition;

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { bestMatch, canSatisfy, matchDocuments } from '../domain/documentMatcher.js';
 import { findService } from '../data/services.js';
 import { doc } from './helpers.js';
-import type { DocumentRequirement, ServiceDefinition } from '@taiyaar/shared';
+import type { DocumentRequirement, ServiceDefinition } from '@seva/shared';
 
 const service = findService('income-certificate') as ServiceDefinition;
 const addressProof = service.requirements.find(

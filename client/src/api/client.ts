@@ -1,4 +1,4 @@
-const SESSION_KEY = 'taiyaar.sessionId';
+const SESSION_KEY = 'seva.sessionId';
 
 /**
  * The session id is the only thing kept in the browser. Everything else lives

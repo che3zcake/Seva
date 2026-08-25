@@ -3,7 +3,7 @@ import { buildIssueFacts } from '../services/openaiService.js';
 import { compareNames, detectIssues } from '../domain/issueDetector.js';
 import { findService } from '../data/services.js';
 import { doc, profile } from './helpers.js';
-import type { ServiceDefinition } from '@taiyaar/shared';
+import type { ServiceDefinition } from '@seva/shared';
 
 const service = findService('income-certificate') as ServiceDefinition;
 

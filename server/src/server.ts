@@ -5,6 +5,6 @@ import { getAIService } from './services/openaiService.js';
 getAIService();
 
 createApp().listen(env.PORT, () => {
-  console.log(`[taiyaar] api listening on http://localhost:${env.PORT}`);
-  console.log('[taiyaar] prototype only - all government data here is synthetic');
+  console.log(`[seva] api listening on http://localhost:${env.PORT}`);
+  console.log('[seva] prototype only - all government data here is synthetic');
 });

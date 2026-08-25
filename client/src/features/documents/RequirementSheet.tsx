@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import type { AIExplanation, DocumentRequirement } from '@taiyaar/shared';
+import type { AIExplanation, DocumentRequirement } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Button, Spinner } from '../../components/ui/Primitives';
 import { AIAnswer } from '../assistant/AIAnswer';

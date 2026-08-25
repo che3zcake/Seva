@@ -1,4 +1,4 @@
-import type { ReadinessResult, ServiceDefinition, SessionState } from '@taiyaar/shared';
+import type { ReadinessResult, ServiceDefinition, SessionState } from '@seva/shared';
 import { detectIssues } from './issueDetector.js';
 import { evaluateReadiness } from './readinessEngine.js';
 import { sessionRepository } from '../repositories/sessionRepository.js';

@@ -1,4 +1,4 @@
-# Taiyaar browser extension
+# Seva browser extension
 
 Spots a government application form in the page you are already on, works out
 which documents it asks for, and tells you which of them you have ready.
@@ -17,7 +17,7 @@ moment you would otherwise have started filling in a form you were not ready for
 3. Tapping it, then **Check my documents**, sends only the *list of document
    names it read* to `POST /api/readiness/from-page` — the same endpoint the
    website's own portal demo uses.
-4. The panel shows ready / needs review / missing against your Taiyaar checklist,
+4. The panel shows ready / needs review / missing against your Seva checklist,
    and links back to fix whatever is short.
 
 It never reads the documents themselves. It never reads form values you have
@@ -25,7 +25,7 @@ typed. It sends document *names it found on the page*, and only when you ask it 
 
 ## Install (unpacked)
 
-1. Start Taiyaar: `npm run dev` from the repo root.
+1. Start Seva: `npm run dev` from the repo root.
 2. Open `chrome://extensions` and turn on **Developer mode** (top right).
 3. **Load unpacked** → choose this `extension/` folder.
 4. Visit <http://localhost:5173> once. That links the extension to your checklist
@@ -35,7 +35,7 @@ typed. It sends document *names it found on the page*, and only when you ask it 
 Works in Chrome, Edge and any Chromium browser. Firefox needs a small manifest
 change (`background.scripts` instead of `service_worker`).
 
-## Pointing it at a deployed Taiyaar
+## Pointing it at a deployed Seva
 
 Click the extension icon, enter the address, **Save**. A non-localhost address
 triggers a Chrome permission prompt for that host; the extension ships with
@@ -47,7 +47,7 @@ permission for localhost only.
 manifest.json      MV3 manifest
 src/background.js  the only code that touches the network
 src/content.js     detection + the panel, in a closed shadow root
-src/link.js        runs on Taiyaar itself, copies the session id across
+src/link.js        runs on Seva itself, copies the session id across
 src/popup.html/js  address and link status
 ```
 

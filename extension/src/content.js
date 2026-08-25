@@ -6,12 +6,12 @@
  * permission to run on any site they visit.
  */
 (() => {
-  if (window.__taiyaarLoaded) return;
-  window.__taiyaarLoaded = true;
+  if (window.__sevaLoaded) return;
+  window.__sevaLoaded = true;
 
-  // Taiyaar's own pages already are the checklist. The portal demo is the one
+  // Seva's own pages already are the checklist. The portal demo is the one
   // exception - it exists precisely to be helped.
-  const isOwnApp = document.querySelector('meta[name="taiyaar-app"]') !== null;
+  const isOwnApp = document.querySelector('meta[name="seva-app"]') !== null;
   if (isOwnApp && !location.pathname.startsWith('/demo/')) return;
 
   const DOC_PATTERN =
@@ -126,7 +126,7 @@
   // Everything lives in a shadow root so the host page's CSS cannot reach it,
   // and ours cannot leak out and break their form.
   const host = document.createElement('div');
-  host.id = 'taiyaar-root';
+  host.id = 'seva-root';
   host.style.cssText = 'all:initial;position:fixed;z-index:2147483647;bottom:16px;right:16px;';
   const root = host.attachShadow({ mode: 'closed' });
   document.documentElement.appendChild(host);
@@ -194,9 +194,9 @@
     </style>
 
     <div class="wrap">
-      <button class="pill" id="pill" aria-label="Taiyaar can help with this form">
+      <button class="pill" id="pill" aria-label="Seva can help with this form">
         <span class="dot"></span>
-        <span><strong>Taiyaar</strong> can help with this form — ${requirements.length} documents asked for</span>
+        <span><strong>Seva</strong> can help with this form — ${requirements.length} documents asked for</span>
       </button>
 
       <div class="panel hidden" id="panel" role="dialog" aria-label="Application readiness">
@@ -225,12 +225,12 @@
     show(`
       <p>This page asks for <strong>${requirements.length} documents</strong>.</p>
       <p class="muted small" style="margin-top:8px">
-        Taiyaar can tell you which ones you already have before you start filling this in.
+        Seva can tell you which ones you already have before you start filling this in.
       </p>
       <button class="cta" id="check">Check my documents</button>
       <div class="note">
         Nothing has left this page. The list above was read here in your browser, and it is only
-        sent to Taiyaar when you tap the button.
+        sent to Seva when you tap the button.
       </div>
     `);
     $('check').addEventListener('click', check);
@@ -239,11 +239,11 @@
   function check() {
     show('<p class="muted"><span class="spin"></span> &nbsp;Checking against what you have prepared…</p>');
 
-    chrome.runtime.sendMessage({ type: 'taiyaar:check', detectedRequirements: requirements }, (reply) => {
+    chrome.runtime.sendMessage({ type: 'seva:check', detectedRequirements: requirements }, (reply) => {
       if (chrome.runtime.lastError || !reply) {
         return show(`
           <div class="err">
-            <b>Taiyaar is not reachable.</b>
+            <b>Seva is not reachable.</b>
             <span class="small">Start it, or set its address from the extension icon.</span>
           </div>
           <button class="cta ghost" id="retry" style="margin-top:10px">Try again</button>
@@ -273,7 +273,7 @@
         const status = item?.status ?? 'unknown';
         const cls = status === 'needs-review' ? 'review' : status;
         const mark = status === 'ready' ? '✓' : status === 'needs-review' ? '!' : status === 'missing' ? '○' : '?';
-        const why = item ? item.reason : 'Taiyaar does not cover this one yet.';
+        const why = item ? item.reason : 'Seva does not cover this one yet.';
         return `
           <div class="row">
             <span class="ico ${cls}" aria-hidden="true">${mark}</span>
@@ -291,9 +291,9 @@
       <div style="margin-top:10px">${rows}</div>
       <button class="cta" id="open">${readiness.readyToApply ? 'Open my checklist' : 'Fix what is missing'}</button>
       <div class="note">
-        Readiness came from your Taiyaar checklist. This panel never reads the documents themselves —
+        Readiness came from your Seva checklist. This panel never reads the documents themselves —
         only which of them exist and what each one is for.
-        ${reply.linked ? '' : '<br><br><strong>Not linked yet.</strong> Open Taiyaar once and this panel will use your real checklist.'}
+        ${reply.linked ? '' : '<br><br><strong>Not linked yet.</strong> Open Seva once and this panel will use your real checklist.'}
       </div>
     `);
 

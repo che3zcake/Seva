@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MessageCircleQuestion, SendHorizonal } from 'lucide-react';
-import type { AIExplanation } from '@taiyaar/shared';
+import type { AIExplanation } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Button, Spinner } from '../../components/ui/Primitives';
 import { AIAnswer } from './AIAnswer';

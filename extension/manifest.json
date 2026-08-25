@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Taiyaar \u2014 Application Readiness",
+  "name": "Seva \u2014 Application Readiness",
   "version": "0.1.0",
   "description": "Spots a government application form and tells you which documents you already have before you start filling it in.",
   "permissions": [

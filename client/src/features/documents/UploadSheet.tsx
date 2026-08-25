@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { AlertTriangle, Check, Upload } from 'lucide-react';
-import type { DocumentAnalysis, DocumentRequirement } from '@taiyaar/shared';
+import type { DocumentAnalysis, DocumentRequirement } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Button, Spinner } from '../../components/ui/Primitives';
 import { useApp } from '../../state/AppContext';

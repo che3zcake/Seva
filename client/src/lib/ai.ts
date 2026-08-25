@@ -1,4 +1,4 @@
-import type { AIExplanation } from '@taiyaar/shared';
+import type { AIExplanation } from '@seva/shared';
 import { apiSend } from '../api/client';
 
 export function explainRequirement(

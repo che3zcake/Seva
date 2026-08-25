@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { AIExplanation, DocumentIssue, ServiceDefinition } from '@taiyaar/shared';
+import type { AIExplanation, DocumentIssue, ServiceDefinition } from '@seva/shared';
 import {
   AI_DISCLAIMER,
   MockAIService,
@@ -45,7 +45,7 @@ export function buildIssueFacts(service: ServiceDefinition, issue: DocumentIssue
   ].join('\n');
 }
 
-const SYSTEM_PROMPT = `You explain Indian government service requirements to citizens inside a prototype called Taiyaar.
+const SYSTEM_PROMPT = `You explain Indian government service requirements to citizens inside a prototype called Seva.
 
 Rules, in order of importance:
 1. The FACTS block is the only source of truth. Never introduce a requirement, document, deadline, fee or office that is not in it.

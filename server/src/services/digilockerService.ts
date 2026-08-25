@@ -1,4 +1,4 @@
-import type { DigiLockerAccount, DigiLockerDocument, Document } from '@taiyaar/shared';
+import type { DigiLockerAccount, DigiLockerDocument, Document } from '@seva/shared';
 import { DIGILOCKER_CATALOGUE } from '../data/digilockerDocuments.js';
 import { DEMO_CITIZEN_NAME } from '../data/demoCitizen.js';
 

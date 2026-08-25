@@ -1,4 +1,4 @@
-import type { CitizenProfile } from '@taiyaar/shared';
+import type { CitizenProfile } from '@seva/shared';
 
 /**
  * The one synthetic citizen this prototype knows about.

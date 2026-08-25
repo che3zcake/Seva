@@ -1,5 +1,5 @@
 {
-  "name": "@taiyaar/server",
+  "name": "@seva/server",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@taiyaar/shared": "*",
+    "@seva/shared": "*",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

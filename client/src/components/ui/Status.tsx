@@ -1,5 +1,5 @@
 import { AlertTriangle, Check, Circle } from 'lucide-react';
-import type { ReadinessStatus } from '@taiyaar/shared';
+import type { ReadinessStatus } from '@seva/shared';
 
 /**
  * Status is never communicated by colour alone: every indicator carries an

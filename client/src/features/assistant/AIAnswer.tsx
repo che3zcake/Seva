@@ -1,5 +1,5 @@
 import { Sparkles, BookText } from 'lucide-react';
-import type { AIExplanation } from '@taiyaar/shared';
+import type { AIExplanation } from '@seva/shared';
 
 /**
  * The label matters as much as the text: a citizen should always be able to

@@ -2,7 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "types": ["node"],
-    "paths": { "@taiyaar/shared": ["../shared/src/index.ts"] }
+    "paths": { "@seva/shared": ["../shared/src/index.ts"] }
   },
   "include": ["src"]
 }

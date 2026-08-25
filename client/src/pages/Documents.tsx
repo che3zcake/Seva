@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, PencilLine } from 'lucide-react';
-import type { DocumentIssue, DocumentRequirement } from '@taiyaar/shared';
+import type { DocumentIssue, DocumentRequirement } from '@seva/shared';
 import { usePreparation } from '../lib/hooks';
 import { useApp } from '../state/AppContext';
 import {

@@ -1,4 +1,4 @@
-import type { CitizenProfile, Document, DocumentIssue } from '@taiyaar/shared';
+import type { CitizenProfile, Document, DocumentIssue } from '@seva/shared';
 
 export type NameComparison = 'exact' | 'variant' | 'different' | 'unknown';
 

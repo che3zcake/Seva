@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, Wand2 } from 'lucide-react';
-import type { CitizenProfile, InformationRequirement } from '@taiyaar/shared';
+import type { CitizenProfile, InformationRequirement } from '@seva/shared';
 import { usePreparation } from '../lib/hooks';
 import { useApp } from '../state/AppContext';
 import { ApiError } from '../api/client';

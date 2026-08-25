@@ -4,7 +4,7 @@ import type {
   CitizenProfile,
   ReadinessResult,
   ServiceDefinition,
-} from '@taiyaar/shared';
+} from '@seva/shared';
 
 export class ApplicationBlocked extends Error {
   constructor(

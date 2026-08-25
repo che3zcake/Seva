@@ -18,7 +18,7 @@ import type {
   ReadinessResult,
   ServiceDefinition,
   SessionState,
-} from '@taiyaar/shared';
+} from '@seva/shared';
 import { ApiError, apiGet, apiSend, apiUpload, clearSession } from '../api/client';
 
 interface ReadinessResponse {

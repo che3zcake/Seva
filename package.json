@@ -1,8 +1,8 @@
 {
-  "name": "taiyaar",
+  "name": "seva",
   "version": "1.0.0",
   "private": true,
-  "description": "Taiyaar - a government application readiness layer (prototype, synthetic data)",
+  "description": "Seva - a government application readiness layer (prototype, synthetic data)",
   "workspaces": ["shared", "server", "client"],
   "scripts": {
     "dev": "concurrently -n server,client -c green,cyan \"npm run dev -w server\" \"npm run dev -w client\"",

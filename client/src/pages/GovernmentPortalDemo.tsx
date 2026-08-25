@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ExternalLink, ShieldCheck, X } from 'lucide-react';
-import type { ReadinessItem, ReadinessResult } from '@taiyaar/shared';
+import type { ReadinessItem, ReadinessResult } from '@seva/shared';
 import { apiSend } from '../api/client';
 import { StatusIndicator } from '../components/ui/Status';
 import { Button, Spinner, buttonClasses } from '../components/ui/Primitives';
@@ -170,7 +170,7 @@ function ReadinessPanel() {
       <div className="flex items-center justify-between gap-2 bg-brand px-4 py-3 text-white">
         <span className="inline-flex items-center gap-2 text-sm font-medium">
           <ShieldCheck size={18} aria-hidden />
-          Taiyaar
+          Seva
         </span>
         <button type="button" onClick={() => setOpen(false)} aria-label="Close readiness panel">
           <X size={18} aria-hidden />

@@ -1,4 +1,4 @@
-import type { ServiceDefinition } from '@taiyaar/shared';
+import type { ServiceDefinition } from '@seva/shared';
 
 const PROTOTYPE_NOTICE =
   'Simulated service. The requirements below are demonstration data written for this prototype, not an official checklist.';

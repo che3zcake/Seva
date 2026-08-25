@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ReadinessResult, ServiceDefinition } from '@taiyaar/shared';
+import type { ReadinessResult, ServiceDefinition } from '@seva/shared';
 import { ApiError } from '../api/client';
 import { useApp } from '../state/AppContext';
 

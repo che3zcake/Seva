@@ -1,4 +1,4 @@
-import type { Document } from '@taiyaar/shared';
+import type { Document } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Badge, Button } from '../../components/ui/Primitives';
 
