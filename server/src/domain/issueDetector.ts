@@ -2,12 +2,28 @@ import type { CitizenProfile, Document, DocumentIssue } from '@taiyaar/shared';
 
 export type NameComparison = 'exact' | 'variant' | 'different' | 'unknown';
 
+/**
+ * Unicode-aware on purpose. The previous version stripped everything outside
+ * a-z, so a name in Devanagari, Tamil or Bengali produced no tokens at all and
+ * every comparison came back "unknown" - a silent all-clear for a large share
+ * of the people this is built for.
+ */
 function tokenize(name: string): string[] {
   return name
+    .normalize('NFKC')
     .toLowerCase()
-    .replace(/[^a-z\s]/g, ' ')
+    // \p{M} matters: Devanagari and other Indic vowel signs are combining
+    // marks, not letters. Without it "राहुल" shatters into fragments.
+    .replace(/[^\p{L}\p{N}\p{M}\s]/gu, ' ')
     .split(/\s+/)
     .filter(Boolean);
+}
+
+function hasNonLatinLetters(name: string): boolean {
+  for (const character of name) {
+    if (/\p{L}/u.test(character) && !/\p{Script=Latin}/u.test(character)) return true;
+  }
+  return false;
 }
 
 /** Short, stable fragment of a value, for building comparison-specific ids. */
@@ -42,6 +58,13 @@ export function compareNames(a: string, b: string): NameComparison {
   const left = tokenize(a);
   const right = tokenize(b);
   if (left.length === 0 || right.length === 0) return 'unknown';
+
+  // A certificate printed in Devanagari against a form filled in English cannot
+  // be compared by spelling. Calling that "a different person" would accuse
+  // someone over a transliteration and leave them no way forward, so we say we
+  // do not know - which is what we actually mean.
+  if (hasNonLatinLetters(a) !== hasNonLatinLetters(b)) return 'unknown';
+
   if (left.join(' ') === right.join(' ')) return 'exact';
 
   const leftSet = new Set(left);

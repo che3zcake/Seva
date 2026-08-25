@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import type { AIExplanation } from '@taiyaar/shared';
+import type { AIExplanation, DocumentIssue, ServiceDefinition } from '@taiyaar/shared';
 import {
   AI_DISCLAIMER,
   MockAIService,
@@ -9,6 +9,41 @@ import {
   type ExplainRequirementInput,
 } from './aiService.js';
 import { env } from '../config/env.js';
+
+/**
+ * What each detected problem means, written without reference to any citizen.
+ *
+ * The deterministic detail strings quote real names; these do not. This map is
+ * the only description of an issue that is ever allowed off the server.
+ */
+const ISSUE_DESCRIPTION: Record<DocumentIssue['code'], string> = {
+  'name-variant':
+    'The name printed on one of their documents is written differently from the name they entered for the application - typically an extra or missing middle name, or the parts in a different order. Usually the same person written two ways.',
+  'name-mismatch':
+    'The name on the document does not appear to belong to the citizen at all - it looks like someone else entirely.',
+  'address-mismatch':
+    'The PIN code on the document is different from the PIN code of the address they entered, so the document may cover a different area.',
+  unreadable: 'The document could not be read.',
+};
+
+/**
+ * The facts block for a flagged document.
+ *
+ * issue.detail quotes the citizen's name and the name printed on their
+ * document. It is written for them to read on their own screen and must not
+ * leave the server, so this is built from the issue CODE instead - which says
+ * everything the model needs in order to explain the situation.
+ *
+ * Exported so the guarantee can be tested rather than asserted.
+ */
+export function buildIssueFacts(service: ServiceDefinition, issue: DocumentIssue): string {
+  return [
+    `Service: ${service.name}`,
+    `Problem found by the prototype: ${ISSUE_DESCRIPTION[issue.code]}`,
+    `Can the citizen clear this themselves: ${issue.resolvable ? 'yes, by confirming it' : 'no, they need a different document'}`,
+    'The citizen can see the specific names involved on their own screen. You cannot, and you do not need to. Explain the situation generally.',
+  ].join('\n');
+}
 
 const SYSTEM_PROMPT = `You explain Indian government service requirements to citizens inside a prototype called Taiyaar.
 
@@ -57,12 +92,7 @@ export class OpenAIService implements AIService {
 
   async explainDocumentIssue(input: ExplainIssueInput): Promise<AIExplanation> {
     const { service, issue } = input;
-    const facts = [
-      `Service: ${service.name}`,
-      `Problem found by the prototype: ${issue.title}`,
-      `Details: ${issue.detail}`,
-      `Can the citizen clear this themselves: ${issue.resolvable ? 'yes, by confirming it' : 'no, they need a different document'}`,
-    ].join('\n');
+    const facts = buildIssueFacts(service, issue);
 
     return this.ask(
       facts,
@@ -93,17 +123,18 @@ export class OpenAIService implements AIService {
     question: string,
     onFailure: () => Promise<AIExplanation>,
   ): Promise<AIExplanation> {
+    const prompt = `FACTS\n${facts}\n\nQUESTION\n${question}`;
     try {
       const response = await this.client.responses.create({
         model: env.OPENAI_MODEL,
         instructions: SYSTEM_PROMPT,
-        input: `FACTS\n${facts}\n\nQUESTION\n${question}`,
+        input: prompt,
         max_output_tokens: 400,
       });
 
       const answer = response.output_text?.trim();
       if (!answer) return onFailure();
-      return { answer, disclaimer: AI_DISCLAIMER, source: 'ai' };
+      return { answer, disclaimer: AI_DISCLAIMER, source: 'ai', sentToModel: prompt };
     } catch (error) {
       console.error('[ai] falling back to deterministic answer:', (error as Error).message);
       return onFailure();

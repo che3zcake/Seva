@@ -82,6 +82,15 @@ and is instructed to explain only what it is given. The UI labels an AI answer
 as *"AI explanation"* and a deterministic one as *"Explanation"*, so the two
 are never confused with the requirement itself.
 
+**A model never sees a citizen's name.** When a document is flagged, the text
+the citizen reads quotes both names — theirs and the one printed on the
+document — because that is the whole point of the warning. What goes to the
+model is built from the issue *code* instead, so the explanation is written
+without anyone's name in it. `blindness.test.ts` enforces this, and the UI has a
+*"What was sent to the AI"* expander showing the literal prompt, because a
+privacy claim nobody can check is a slogan. See
+[docs/blind-courier.md](docs/blind-courier.md) for where this is going.
+
 ### Layout
 
 ```
@@ -316,7 +325,7 @@ npm run typecheck   # strict TypeScript across all three packages
 npm test
 ```
 
-52 tests covering the parts where being wrong actually costs something:
+60 tests covering the parts where being wrong actually costs something:
 
 - **Readiness engine** — missing/needs-review/ready transitions, information
   requirements blocking readiness, the resolved-issue path, the 100% case
@@ -327,6 +336,11 @@ npm test
 - **API** — validation, readable error bodies, the refusal to start or submit
   early, upload rejection, the extension endpoint, and one test that walks the
   entire journey from empty session to simulated submission
+- **Blindness** (`blindness.test.ts`) — asserts that a citizen's name and the
+  name printed on their document appear in the copy they read on their own
+  screen and *never* in anything sent to the model. Verified to fail against the
+  commit before the fix, so it tests something real. Also covers Devanagari,
+  Tamil and Bengali names
 - **Regressions** (`regressions.test.ts`) — one test per bug that shipped once:
   a confirmation leaking onto a different comparison, an initial being read as a
   different person, an unconfigured service reporting itself ready, a stale

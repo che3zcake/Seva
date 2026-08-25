@@ -1,28 +1,60 @@
 {
   "manifest_version": 3,
-  "name": "Taiyaar — Application Readiness",
+  "name": "Taiyaar \u2014 Application Readiness",
   "version": "0.1.0",
   "description": "Spots a government application form and tells you which documents you already have before you start filling it in.",
-  "permissions": ["storage"],
-  "host_permissions": ["http://localhost:4000/*", "http://127.0.0.1:4000/*"],
-  "optional_host_permissions": ["https://*/*"],
-  "background": { "service_worker": "src/background.js" },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:4000/*",
+    "http://127.0.0.1:4000/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["src/content.js"],
+      "matches": [
+        "https://*.gov.in/*",
+        "http://*.gov.in/*",
+        "https://*.nic.in/*",
+        "http://*.nic.in/*",
+        "http://localhost:5173/*",
+        "http://localhost:4000/*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
       "run_at": "document_idle",
       "all_frames": false
     },
     {
-      "matches": ["http://localhost:5173/*", "http://localhost:4000/*"],
-      "js": ["src/link.js"],
+      "matches": [
+        "http://localhost:5173/*",
+        "http://localhost:4000/*"
+      ],
+      "js": [
+        "src/link.js"
+      ],
       "run_at": "document_idle"
     }
   ],
   "action": {
     "default_popup": "src/popup.html",
-    "default_icon": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" }
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
   },
-  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" }
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
 }
