@@ -10,7 +10,20 @@ import { env } from './config/env.js';
 export function createApp(): Express {
   const app = express();
 
-  app.use(cors({ origin: env.CLIENT_URL, credentials: false }));
+  app.use(
+    cors({
+      origin(origin, callback) {
+        // No Origin header: same-origin, or a non-browser client such as the
+        // extension's service worker.
+        if (!origin) return callback(null, true);
+        if (origin === env.CLIENT_URL) return callback(null, true);
+        // The browser extension calls the readiness API from its own origin.
+        if (/^(chrome-extension|moz-extension):\/\//.test(origin)) return callback(null, true);
+        return callback(null, false);
+      },
+      credentials: false,
+    }),
+  );
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api', apiRouter);

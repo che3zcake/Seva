@@ -71,20 +71,21 @@ export function GovernmentPortalDemo() {
 
           <PortalSection title="D. Enclosures">
             <ul className="col-span-full space-y-2 text-sm">
-              {PAGE_REQUIREMENTS.map((requirement) => (
-                <li
-                  key={requirement.label}
-                  className="flex items-center justify-between border border-[#cdd6df] bg-white px-3 py-2"
-                >
-                  <span>
-                    {requirement.label}
-                    <span className="ml-2 text-xs text-[#5a6b7c]">{requirement.hint}</span>
-                  </span>
-                  <span className="border border-[#cdd6df] px-2 py-1 text-xs text-[#5a6b7c]">
-                    Choose file
-                  </span>
-                </li>
-              ))}
+              {PAGE_REQUIREMENTS.map((requirement) => {
+                const id = `enclosure-${requirement.label.replace(/[^a-z]+/gi, '-').toLowerCase()}`;
+                return (
+                  <li
+                    key={requirement.label}
+                    className="flex flex-wrap items-center justify-between gap-2 border border-[#cdd6df] bg-white px-3 py-2"
+                  >
+                    <label htmlFor={id}>
+                      {requirement.label}
+                      <span className="ml-2 text-xs text-[#5a6b7c]">{requirement.hint}</span>
+                    </label>
+                    <input id={id} type="file" className="max-w-[12rem] text-xs text-[#5a6b7c]" />
+                  </li>
+                );
+              })}
             </ul>
           </PortalSection>
         </div>
@@ -111,10 +112,17 @@ function PortalSection({ title, children }: { title: string; children: React.Rea
 }
 
 function PortalField({ label }: { label: string }) {
+  const id = `portal-${label.replace(/[^a-z]+/gi, '-').toLowerCase()}`;
   return (
     <div>
-      <span className="block text-xs text-[#5a6b7c]">{label}</span>
-      <div className="mt-1 h-9 border border-[#cdd6df] bg-[#fbfcfd]" aria-hidden />
+      <label htmlFor={id} className="block text-xs text-[#5a6b7c]">
+        {label}
+      </label>
+      <input
+        id={id}
+        type="text"
+        className="mt-1 h-9 w-full border border-[#cdd6df] bg-[#fbfcfd] px-2 text-sm"
+      />
     </div>
   );
 }

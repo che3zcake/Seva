@@ -249,9 +249,37 @@ Two things to get right in a new service:
 - `prefillFrom` on application fields — links a form field to a prepared
   answer, which is what makes the form arrive pre-filled.
 
-## 13. Adding a browser extension later
+## 13. The browser extension
 
-The backend hook already exists:
+`extension/` holds a Chrome MV3 extension — see [extension/README.md](extension/README.md)
+for install steps. It is the shape the product is aiming at: the website is
+where you prepare, and the extension is where that preparation shows up on the
+department's own page, at the moment you would otherwise have started a form you
+were not ready for.
+
+What it does:
+
+1. Reads the visible text of any page you are on, looking for document names
+   near file inputs, enclosure lists and labels. **This runs entirely in your
+   browser.**
+2. If a page looks like an application form asking for two or more documents, a
+   small pill appears. Nothing has been sent anywhere yet.
+3. Tapping **Check my documents** sends only *the document names it read* to
+   `POST /api/readiness/from-page` — the same endpoint the in-app portal demo
+   uses. Never the page's contents, never what you have typed, never a document.
+4. The panel shows ready / needs review / missing against your checklist, and is
+   honest about requirements it does not cover.
+
+The network call lives in the service worker rather than the content script, so
+the request carries the extension's own origin and the government portal is
+never involved in it.
+
+`src/link.js` runs only on Taiyaar's own pages and copies the session id the
+site already stores locally, so the panel answers against your real checklist.
+Taiyaar's own pages are skipped via a `<meta name="taiyaar-app">` marker — apart
+from `/demo/government-portal`, which exists to be helped.
+
+The backend hook it uses:
 
 ```
 POST /api/readiness/from-page
@@ -268,9 +296,9 @@ Government portal → extension reads visible requirements
                   → readiness result rendered in an overlay
 ```
 
-`/demo/government-portal` shows exactly this against a fictional portal page,
-using the same endpoint an extension would call. No extension is needed to see
-it, and the website works fully without one.
+`/demo/government-portal` shows the same thing without installing anything, so a
+demo never depends on someone loading an unpacked extension. The website works
+fully without the extension; the extension is useless without the website.
 
 ## 14. Scripts
 
