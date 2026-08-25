@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-paper: #faf9f6;
+  --color-surface: #ffffff;
+  --color-ink: #16211e;
+  --color-muted: #5b6b66;
+  --color-line: #e3e1da;
+  --color-line-strong: #cfccc2;
+
+  --color-brand: #0f5c4e;
+  --color-brand-dark: #0b463b;
+  --color-brand-soft: #e7f0ed;
+
+  --color-ready: #0f7b5f;
+  --color-ready-soft: #e6f3ee;
+  --color-warn: #8a5200;
+  --color-warn-soft: #fbf0dd;
+  --color-miss: #a33325;
+  --color-miss-soft: #faeae7;
+  --color-info: #1b4965;
+  --color-info-soft: #e8eff4;
+
+  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    /* Comfortable for someone reading carefully, not skimming. */
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Focus must be obvious - a lot of people here will be on a keyboard. */
+  :focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-brand-soft);
+  }
+}
+
+@layer utilities {
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only fixed left-4 top-4 z-50 rounded-lg bg-brand px-4 py-2 text-white;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
