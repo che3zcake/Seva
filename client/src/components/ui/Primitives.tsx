@@ -11,6 +11,17 @@ const VARIANTS: Record<Variant, string> = {
   danger: 'bg-surface text-miss border border-miss/40 hover:bg-miss-soft',
 };
 
+/**
+ * Shared so a react-router <Link> can *be* the button instead of wrapping one.
+ * A <button> inside an <a> is invalid markup and gives keyboard users two tab
+ * stops for one action.
+ */
+export function buttonClasses(variant: Variant = 'primary', block = false): string {
+  return `inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-base font-medium transition-colors ${
+    VARIANTS[variant]
+  } ${block ? 'w-full' : ''}`;
+}
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   loading?: boolean;

@@ -4,7 +4,7 @@ import { ChevronDown, ExternalLink, ShieldCheck, X } from 'lucide-react';
 import type { ReadinessItem, ReadinessResult } from '@taiyaar/shared';
 import { apiSend } from '../api/client';
 import { StatusIndicator } from '../components/ui/Status';
-import { Button, Spinner } from '../components/ui/Primitives';
+import { Button, Spinner, buttonClasses } from '../components/ui/Primitives';
 
 /**
  * A fictional portal, invented for this demo. It deliberately does not
@@ -213,10 +213,12 @@ function ReadinessPanel() {
               the backend changes to support it.
             </div>
 
-            <Link to="/prepare/income-certificate/documents">
-              <Button block variant="secondary" icon={<ExternalLink size={16} aria-hidden />}>
-                Open my checklist
-              </Button>
+            <Link
+              to="/prepare/income-certificate/documents"
+              className={buttonClasses('secondary', true)}
+            >
+              <ExternalLink size={16} aria-hidden />
+              Open my checklist
             </Link>
           </div>
         ) : null}

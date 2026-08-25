@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, FolderLock, ShieldCheck } from 'lucide-react';
 import type { DigiLockerAccount, DigiLockerDocument } from '@taiyaar/shared';
 import { Sheet } from '../../components/ui/Overlay';
@@ -7,6 +7,10 @@ import { useApp } from '../../state/AppContext';
 import { ApiError } from '../../api/client';
 
 type Stage = 'consent' | 'connecting' | 'documents' | 'failed';
+
+function sameSet(a: string[], b: string[]): boolean {
+  return a.length === b.length && a.every((id) => b.includes(id));
+}
 
 /**
  * A stand-in for the DigiLocker consent flow. Every screen here says so - the
@@ -24,13 +28,13 @@ export function DigiLockerSheet({
   onSelected: () => Promise<void>;
   alreadyChosenIds: string[];
 }) {
-  const { session, connectDigiLocker, selectDigiLockerDocuments } = useApp();
+  const { session, connectDigiLocker, selectDigiLockerDocuments, removeDocument } = useApp();
   const [stage, setStage] = useState<Stage>(session?.digiLockerConnected ? 'documents' : 'consent');
   const [account, setAccount] = useState<DigiLockerAccount | null>(
     session?.digiLockerAccount ?? null,
   );
   const [documents, setDocuments] = useState<DigiLockerDocument[]>([]);
-  const [picked, setPicked] = useState<string[]>([]);
+  const [picked, setPicked] = useState<string[]>(alreadyChosenIds);
   const [saving, setSaving] = useState(false);
   const [failure, setFailure] = useState<{ message: string; action: string } | null>(null);
 
@@ -56,18 +60,39 @@ export function DigiLockerSheet({
     }
   }
 
-  async function use() {
-    if (picked.length === 0) return;
+  // Coming back to an already-connected locker starts at the document list with
+  // nothing in it, because the list lives in component state and this component
+  // remounts. Reconnecting is idempotent and instant, so just refill it.
+  useEffect(() => {
+    if (!open) return;
+    setPicked(alreadyChosenIds);
+    if (stage === 'documents' && documents.length === 0 && !saving) void connect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  function close() {
+    setFailure(null);
+    onClose();
+  }
+
+  async function save() {
     setSaving(true);
+    setFailure(null);
     try {
-      await selectDigiLockerDocuments(picked);
+      // Unticking has to actually remove, otherwise the checkbox lies.
+      const dropped = alreadyChosenIds.filter((id) => !picked.includes(id));
+      for (const id of dropped) await removeDocument(id);
+
+      const added = picked.filter((id) => !alreadyChosenIds.includes(id));
+      if (added.length > 0) await selectDigiLockerDocuments(added);
+
       await onSelected();
       onClose();
     } catch (error) {
       setFailure(
         error instanceof ApiError
           ? { message: error.message, action: error.action }
-          : { message: 'We could not add those documents.', action: 'Try again.' },
+          : { message: 'We could not update those documents.', action: 'Try again.' },
       );
       setStage('failed');
     } finally {
@@ -75,21 +100,30 @@ export function DigiLockerSheet({
     }
   }
 
+  const unchanged = sameSet(picked, alreadyChosenIds);
   const title =
-    stage === 'documents' ? 'Your documents' : stage === 'failed' ? 'Connection failed' : 'Connect your DigiLocker';
+    stage === 'documents'
+      ? 'Your documents'
+      : stage === 'failed'
+        ? 'Connection failed'
+        : 'Connect your DigiLocker';
+
+  function actionLabel(): string {
+    if (unchanged) return picked.length === 0 ? 'Select a document to continue' : 'No changes to save';
+    if (picked.length === 0) return 'Remove all locker documents';
+    return `Use ${picked.length} document${picked.length === 1 ? '' : 's'} for this application`;
+  }
 
   return (
     <Sheet
       open={open}
-      onClose={onClose}
+      onClose={close}
       title={title}
       subtitle={stage === 'documents' && account ? account.holderName : undefined}
       footer={
         stage === 'documents' ? (
-          <Button block loading={saving} disabled={picked.length === 0} onClick={use}>
-            {picked.length === 0
-              ? 'Select a document to continue'
-              : `Use ${picked.length} document${picked.length === 1 ? '' : 's'} for this application`}
+          <Button block loading={saving} disabled={unchanged} onClick={save}>
+            {actionLabel()}
           </Button>
         ) : undefined
       }
@@ -135,51 +169,60 @@ export function DigiLockerSheet({
       ) : null}
 
       {stage === 'documents' ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted">
-            Tick the documents you want to use. We will work out which requirements each one covers.
-          </p>
-          <ul className="space-y-3">
-            {documents.map((document) => {
-              const checked = picked.includes(document.id);
-              return (
-                <li key={document.id}>
-                  <label
-                    className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition-colors ${
-                      checked ? 'border-brand bg-brand-soft/50' : 'border-line hover:border-line-strong'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      className="mt-1 size-5 shrink-0 accent-[#0f5c4e]"
-                      onChange={(event) =>
-                        setPicked((current) =>
-                          event.target.checked
-                            ? [...current, document.id]
-                            : current.filter((id) => id !== document.id),
-                        )
-                      }
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2">
-                        <span className="font-medium text-ink">{document.name}</span>
-                        {checked ? (
-                          <Check size={16} className="text-brand" aria-hidden />
-                        ) : null}
+        documents.length === 0 ? (
+          <div className="py-8">
+            <Spinner label="Loading your documents…" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-muted">
+              Tick the documents you want to use. We will work out which requirements each one
+              covers. Unticking one removes it from your checklist.
+            </p>
+            <ul className="space-y-3">
+              {documents.map((document) => {
+                const checked = picked.includes(document.id);
+                return (
+                  <li key={document.id}>
+                    <label
+                      className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition-colors ${
+                        checked
+                          ? 'border-brand bg-brand-soft/50'
+                          : 'border-line hover:border-line-strong'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        className="mt-1 size-5 shrink-0 accent-[#0f5c4e]"
+                        onChange={(event) =>
+                          setPicked((current) =>
+                            event.target.checked
+                              ? [...current, document.id]
+                              : current.filter((id) => id !== document.id),
+                          )
+                        }
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <span className="font-medium text-ink">{document.name}</span>
+                          {checked ? <Check size={16} className="text-brand" aria-hidden /> : null}
+                        </span>
+                        <span className="mt-0.5 block text-sm text-muted">
+                          {document.description}
+                        </span>
+                        <span className="mt-2 flex flex-wrap gap-1.5">
+                          <Badge tone="info">Synthetic document</Badge>
+                          <Badge tone="neutral">{document.digilockerRef}</Badge>
+                        </span>
                       </span>
-                      <span className="mt-0.5 block text-sm text-muted">{document.description}</span>
-                      <span className="mt-2 flex flex-wrap gap-1.5">
-                        <Badge tone="info">Synthetic document</Badge>
-                        <Badge tone="neutral">{document.digilockerRef}</Badge>
-                      </span>
-                    </span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )
       ) : null}
 
       {stage === 'failed' && failure ? (

@@ -1,6 +1,8 @@
 import { useId } from 'react';
 
 export interface FieldProps {
+  /** Stable id so a failed validation can focus this control. */
+  id?: string;
   label: string;
   inputType: 'text' | 'date' | 'textarea' | 'select' | 'number' | 'tel';
   value: string;
@@ -17,6 +19,7 @@ const BASE =
   'w-full rounded-xl border bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70';
 
 export function Field({
+  id: providedId,
   label,
   inputType,
   value,
@@ -27,7 +30,8 @@ export function Field({
   placeholder,
   error,
 }: FieldProps) {
-  const id = useId();
+  const generatedId = useId();
+  const id = providedId ?? generatedId;
   const helpId = `${id}-help`;
   const errorId = `${id}-error`;
   const describedBy = [helpText ? helpId : null, error ? errorId : null].filter(Boolean).join(' ');

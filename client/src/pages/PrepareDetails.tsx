@@ -66,7 +66,13 @@ export function PrepareDetails() {
       }
     }
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      // On a phone the error text is usually off-screen above the button, so
+      // without this "Continue" just appears to do nothing.
+      const firstInvalid = questions.find((question) => nextErrors[question.id]);
+      if (firstInvalid) document.getElementById(firstInvalid.id)?.focus();
+      return;
+    }
 
     setSaving(true);
     setSaveError(null);
@@ -117,6 +123,7 @@ export function PrepareDetails() {
           {questions.map((question) => (
             <Field
               key={question.id}
+              id={question.id}
               label={question.title}
               helpText={question.description}
               inputType={question.inputType}

@@ -52,7 +52,13 @@ export function Apply() {
       if (field.required && !valueFor(field.id).trim()) next[field.id] = 'Please fill this in.';
     }
     setErrors(next);
-    return Object.keys(next).length === 0;
+    const firstInvalid = current.fields.find((field) => next[field.id]);
+    if (firstInvalid) {
+      // Move focus so the error is both seen and announced.
+      document.getElementById(firstInvalid.id)?.focus();
+      return false;
+    }
+    return true;
   }
 
   async function goTo(index: number) {
@@ -126,6 +132,7 @@ export function Apply() {
           {step.fields.map((field) => (
             <Field
               key={field.id}
+              id={field.id}
               label={field.label}
               inputType={field.inputType}
               options={field.options}

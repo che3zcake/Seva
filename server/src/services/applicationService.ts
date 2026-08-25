@@ -85,7 +85,17 @@ export function checkSubmittable(
     }
   }
 
-  const attached = new Set(application.attachedDocuments.map((d) => d.requirementId));
+  // An attachment only counts while it still points at the document readiness
+  // currently resolves for that requirement. Deleting or replacing a document
+  // after attaching it must re-open the step, not submit a stale name.
+  const liveDocumentFor = new Map(
+    readiness.items.map((item) => [item.requirementId, item.matchedDocumentId]),
+  );
+  const attached = new Set(
+    application.attachedDocuments
+      .filter((d) => liveDocumentFor.get(d.requirementId) === d.documentId)
+      .map((d) => d.requirementId),
+  );
   const missingDocuments = service.requirements
     .filter((r) => r.type === 'document' && r.required && !attached.has(r.id))
     .map((r) => r.title);

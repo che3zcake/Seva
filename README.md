@@ -288,7 +288,7 @@ npm run typecheck   # strict TypeScript across all three packages
 npm test
 ```
 
-40 tests covering the parts where being wrong actually costs something:
+52 tests covering the parts where being wrong actually costs something:
 
 - **Readiness engine** — missing/needs-review/ready transitions, information
   requirements blocking readiness, the resolved-issue path, the 100% case
@@ -299,6 +299,10 @@ npm test
 - **API** — validation, readable error bodies, the refusal to start or submit
   early, upload rejection, the extension endpoint, and one test that walks the
   entire journey from empty session to simulated submission
+- **Regressions** (`regressions.test.ts`) — one test per bug that shipped once:
+  a confirmation leaking onto a different comparison, an initial being read as a
+  different person, an unconfigured service reporting itself ready, a stale
+  attachment surviving submission, and an oversized upload becoming a 500
 
 The readiness engine is pure and testable without Express or React.
 

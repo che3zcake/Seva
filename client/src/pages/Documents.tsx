@@ -11,6 +11,7 @@ import {
   LoadingScreen,
   PageHeader,
   ProgressBar,
+  buttonClasses,
 } from '../components/ui/Primitives';
 import { Stepper } from '../components/Stepper';
 import { useToast } from '../components/ui/Overlay';
@@ -148,10 +149,12 @@ export function Documents() {
               ? 'One question about you is still unanswered.'
               : `${informationLeft} questions about you are still unanswered.`}
           </p>
-          <Link to={`/prepare/${serviceId}/details`}>
-            <Button variant="secondary" icon={<PencilLine size={16} aria-hidden />}>
-              Answer them
-            </Button>
+          <Link
+            to={`/prepare/${serviceId}/details`}
+            className={buttonClasses('secondary')}
+          >
+            <PencilLine size={16} aria-hidden />
+            Answer them
           </Link>
         </Card>
       ) : null}

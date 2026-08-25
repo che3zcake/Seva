@@ -3,6 +3,7 @@ import { findService } from '../data/services.js';
 import { readinessFor } from '../domain/sessionReadiness.js';
 import { sessionRepository } from '../repositories/sessionRepository.js';
 import {
+  ApplicationBlocked,
   attachDocument,
   checkSubmittable,
   startApplication,
@@ -18,6 +19,12 @@ applicationRouter.post('/start', (req, res) => {
   const { serviceId } = applicationStartSchema.parse(req.body);
   const service = findService(serviceId);
   if (!service) throw new NotFound('We do not have that service in this prototype.');
+  if (service.status !== 'available') {
+    throw new ApplicationBlocked(
+      `${service.name} is not part of this prototype yet.`,
+      'Pick a service marked as available.',
+    );
+  }
 
   const id = sessionIdFrom(req);
   const session = sessionRepository.getOrCreate(id);

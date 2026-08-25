@@ -71,8 +71,13 @@ export function evaluateReadiness(input: ReadinessInput): ReadinessResult {
   const documentItems = items.filter((i) => i.type === 'document');
   const informationItems = items.filter((i) => i.type === 'information');
 
+  // A service with no requirements is not "fully prepared", it is unconfigured.
+  // Failing open here would let the coming-soon services be started and submitted.
   const readyToApply =
-    missingRequirements.length === 0 && needsReview === 0 && blockingIssues.length === 0;
+    items.length > 0 &&
+    missingRequirements.length === 0 &&
+    needsReview === 0 &&
+    blockingIssues.length === 0;
 
   return {
     serviceId: service.id,

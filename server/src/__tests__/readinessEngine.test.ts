@@ -73,7 +73,8 @@ describe('readiness engine', () => {
       forRequirementId: 'income-proof',
       metadata: { holderName: 'Rahul Kumar Sharma' },
     });
-    const result = run([slip], profile(), ['issue-name-slip']);
+    const raised = detectIssues({ profile: profile(), documents: [slip], resolvedIssueIds: [] });
+    const result = run([slip], profile(), raised.map((issue) => issue.id));
     const item = result.items.find((i) => i.requirementId === 'income-proof');
 
     expect(item?.status).toBe('ready');

@@ -2,11 +2,11 @@ import { Link, useParams } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, FileText, MessageSquareText } from 'lucide-react';
 import { usePreparation } from '../lib/hooks';
 import {
-  Button,
   Card,
   ErrorNotice,
   LoadingScreen,
   PageHeader,
+  buttonClasses,
 } from '../components/ui/Primitives';
 import { PrototypeNote } from '../components/Layout';
 
@@ -95,10 +95,9 @@ export function PrepareOverview() {
       </div>
 
       <div className="mt-8">
-        <Link to={next.to}>
-          <Button block icon={<ArrowRight size={18} aria-hidden />}>
-            {next.label}
-          </Button>
+        <Link to={next.to} className={buttonClasses('primary', true)}>
+          <ArrowRight size={18} aria-hidden />
+          {next.label}
         </Link>
       </div>
 

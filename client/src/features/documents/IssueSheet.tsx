@@ -114,8 +114,11 @@ export function IssueSheet({
               variant="secondary"
               block
               onClick={() => {
+                // Hand off, do NOT close: onReplace switches which sheet is
+                // open, and calling onClose after it would clear that choice.
+                setExplanation(null);
+                setFailed(null);
                 onReplace(issue);
-                close();
               }}
             >
               Use a different document instead

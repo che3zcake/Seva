@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, FileCheck2, FolderSearch, PlayCircle } from 'lucide-react';
-import { Button, Card } from '../components/ui/Primitives';
+import { Card, buttonClasses } from '../components/ui/Primitives';
 
 const STEPS = [
   {
@@ -56,15 +56,12 @@ export function Landing() {
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link to="/services" className="sm:w-auto">
-            <Button icon={<ArrowRight size={18} aria-hidden />} block>
-              Check an application
-            </Button>
+          <Link to="/services" className={buttonClasses('primary', true)}>
+            <ArrowRight size={18} aria-hidden />
+            Check an application
           </Link>
-          <a href="#how-it-works" className="sm:w-auto">
-            <Button variant="secondary" block>
-              See how it works
-            </Button>
+          <a href="#how-it-works" className={buttonClasses('secondary', true)}>
+            See how it works
           </a>
         </div>
 

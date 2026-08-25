@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { MulterError } from 'multer';
 import { UploadRejected } from '../services/documentAnalysis.js';
 import { ApplicationBlocked } from '../services/applicationService.js';
 
@@ -35,6 +36,24 @@ export function errorHandler(
   if (error instanceof NotFound) {
     res.status(404).json({
       error: { code: 'not_found', message: error.message, action: 'Go back and start again.' },
+    });
+    return;
+  }
+
+  // multer rejects oversized files before our own check ever runs.
+  if (error instanceof MulterError) {
+    res.status(400).json({
+      error: {
+        code: 'blocked',
+        message:
+          error.code === 'LIMIT_FILE_SIZE'
+            ? 'That file is larger than 5 MB.'
+            : 'We could not read that upload.',
+        action:
+          error.code === 'LIMIT_FILE_SIZE'
+            ? 'Try a smaller photo, or save the PDF at a lower quality.'
+            : 'Choose a single JPG, PNG or PDF file and try again.',
+      },
     });
     return;
   }

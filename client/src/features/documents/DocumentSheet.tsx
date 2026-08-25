@@ -61,14 +61,7 @@ export function DocumentSheet({
           </p>
 
           {onReplace ? (
-            <Button
-              variant="secondary"
-              block
-              onClick={() => {
-                onReplace();
-                onClose();
-              }}
-            >
+            <Button variant="secondary" block onClick={onReplace}>
               Use a different document
             </Button>
           ) : null}

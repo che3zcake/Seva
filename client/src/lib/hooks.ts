@@ -50,7 +50,7 @@ export function useAsync<T>(load: () => Promise<T>, deps: readonly unknown[]) {
  * and a freshly computed readiness result.
  */
 export function usePreparation(serviceId: string | undefined) {
-  const { loadService, refreshReadiness } = useApp();
+  const { loadService, refreshReadiness, readiness: live } = useApp();
 
   const { data, error, loading, retry } = useAsync<{
     service: ServiceDefinition;
@@ -64,7 +64,10 @@ export function usePreparation(serviceId: string | undefined) {
 
   return {
     service: data?.service ?? null,
-    readiness: data?.readiness ?? null,
+    // Prefer the context's copy: every mutation refreshes it, while the fetched
+    // one is frozen at mount. Guarded by serviceId so a stale service's result
+    // can never leak into another one's screen.
+    readiness: live?.serviceId === serviceId ? live : (data?.readiness ?? null),
     error,
     loading,
     reload: retry,

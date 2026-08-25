@@ -10,6 +10,27 @@ function tokenize(name: string): string[] {
     .filter(Boolean);
 }
 
+/** Short, stable fragment of a value, for building comparison-specific ids. */
+function slug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40);
+}
+
+/**
+ * Two name parts refer to the same thing when they are equal, or when one is an
+ * initial for the other. "Rahul K Sharma" and "Rahul Kumar Sharma" are the same
+ * person, and telling someone otherwise strands them with no way forward.
+ */
+function tokenMatches(a: string, b: string): boolean {
+  if (a === b) return true;
+  if (a.length === 1 && b.startsWith(a)) return true;
+  if (b.length === 1 && a.startsWith(b)) return true;
+  return false;
+}
+
 /**
  * Compares a name on a document with the name entered for the application.
  *
@@ -29,7 +50,9 @@ export function compareNames(a: string, b: string): NameComparison {
   const longer = left.length <= right.length ? rightSet : leftSet;
 
   let contained = 0;
-  for (const token of shorter) if (longer.has(token)) contained += 1;
+  for (const token of shorter) {
+    if ([...longer].some((candidate) => tokenMatches(token, candidate))) contained += 1;
+  }
 
   // Every part of the shorter name appears in the longer one: extra middle
   // name, reordered parts, or a dropped surname.
@@ -74,7 +97,10 @@ export function detectIssues(input: DetectIssuesInput): DocumentIssue[] {
     if (holderName && profile.fullName.trim()) {
       const comparison = compareNames(holderName, profile.fullName);
       if (comparison === 'variant') {
-        const id = `issue-name-${doc.id}`;
+        // The id encodes *what* was compared. Without that, a confirmation given
+        // for one pair of names is silently reapplied after the citizen edits
+        // their profile, and a mismatch they never saw shows up already cleared.
+        const id = `issue-name-${doc.id}-${slug(holderName)}-${slug(profile.fullName)}`;
         issues.push({
           id,
           code: 'name-variant',
@@ -89,7 +115,7 @@ export function detectIssues(input: DetectIssuesInput): DocumentIssue[] {
           resolutionPrompt: `Is "${holderName}" you?`,
         });
       } else if (comparison === 'different') {
-        const id = `issue-name-${doc.id}`;
+        const id = `issue-name-${doc.id}-${slug(holderName)}-${slug(profile.fullName)}`;
         issues.push({
           id,
           code: 'name-mismatch',
@@ -108,7 +134,7 @@ export function detectIssues(input: DetectIssuesInput): DocumentIssue[] {
     const docAddress = doc.metadata.address;
     if (docAddress && profile.address.trim()) {
       if (compareAddresses(docAddress, profile.address) === 'different') {
-        const id = `issue-address-${doc.id}`;
+        const id = `issue-address-${doc.id}-${pinCode(docAddress) ?? 'x'}-${pinCode(profile.address) ?? 'x'}`;
         issues.push({
           id,
           code: 'address-mismatch',
