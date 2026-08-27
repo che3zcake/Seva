@@ -181,7 +181,14 @@ export function Readiness() {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 p-4 backdrop-blur sm:static sm:mt-10 sm:border-0 sm:bg-transparent sm:p-0">
         <div className="mx-auto max-w-3xl">
           {ready ? (
-            <Button block loading={starting} icon={<ArrowRight size={18} aria-hidden />} onClick={begin}>
+            // The autopsy card already carries "Continue to mock form".
+            <Button
+              block
+              variant={autopsy?.clear ? 'secondary' : 'primary'}
+              loading={starting}
+              icon={<ArrowRight size={18} aria-hidden />}
+              onClick={begin}
+            >
               Start application
             </Button>
           ) : (

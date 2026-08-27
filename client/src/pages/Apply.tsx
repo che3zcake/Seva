@@ -33,7 +33,15 @@ export function Apply() {
   // If the citizen lands here without a started application, send them back to
   // the readiness screen rather than showing an empty form.
   useEffect(() => {
-    if (!loading && !application && serviceId) navigate(`/prepare/${serviceId}/readiness`, { replace: true });
+    if (loading || !serviceId) return;
+    if (!application) {
+      navigate(`/prepare/${serviceId}/readiness`, { replace: true });
+      return;
+    }
+    // Browser Back from the completion screen would otherwise reopen a
+    // submitted application as an editable form, and submitting again would
+    // mint a second reference number for the same application.
+    if (application.status === 'submitted') navigate('/complete', { replace: true });
   }, [loading, application, serviceId, navigate]);
 
   if (loading) return <LoadingScreen label="Opening your application…" />;

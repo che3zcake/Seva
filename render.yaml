@@ -1,18 +1,21 @@
 # One free Render web service runs the whole thing: the API also serves the
 # built client (see server/src/app.ts), so there is a single public URL and no
 # CORS to configure.
+#
+# Deliberately NO `NODE_ENV: production` here. Render applies service env vars
+# during the build, and npm omits devDependencies whenever NODE_ENV is
+# production - which would strip vite, tailwind and tsx, so the build could not
+# run and neither could the server. Nothing in the code reads NODE_ENV anyway.
 services:
   - type: web
     name: seva
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
-        value: production
       # Optional. Without it the deterministic explanations answer instead,
       # and the whole journey still works.
       - key: OPENAI_API_KEY

@@ -48,7 +48,7 @@ export function Layout({ children }: { children: ReactNode }) {
                     setResetting(false);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-brand hover:text-brand disabled:opacity-50"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line px-3.5 py-2.5 text-xs font-medium text-muted hover:border-brand hover:text-brand disabled:opacity-50"
               >
                 <RotateCcw size={13} aria-hidden />
                 {resetting ? 'Resetting…' : 'Reset demo'}
@@ -66,7 +66,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
 
       <footer className="border-t border-line bg-surface">
-        <div className="mx-auto max-w-3xl space-y-3 px-5 py-8 text-sm text-muted">
+        <div className="mx-auto max-w-3xl space-y-3 px-5 pb-40 pt-8 text-sm text-muted sm:pb-8">
           <p>{PROTOTYPE_DISCLOSURE}</p>
           <p>
             Seva is an independent demonstration project. It is not affiliated with, endorsed

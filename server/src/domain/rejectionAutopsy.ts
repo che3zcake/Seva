@@ -83,8 +83,11 @@ function selectRule(
     if (issue) return { rule, issue };
   }
 
+  // Attach the open issue even when no rule named its code. Without this the
+  // finding carries no issueId, the interface offers "add a document" for a
+  // requirement that already has one, and the stop can never be cleared.
   const general = candidates.find((rule) => !rule.issueCode);
-  return general ? { rule: general } : undefined;
+  return general ? { rule: general, issue: openIssues[0] } : undefined;
 }
 
 function toFinding(
@@ -92,6 +95,8 @@ function toFinding(
   item: ReadinessItem,
   issue?: DocumentIssue,
 ): RejectionFinding {
+  const flagged = item.status === 'needs-review';
+
   return {
     ruleId: rule.id,
     requirementId: rule.requirementId,
@@ -99,12 +104,23 @@ function toFinding(
     mockStepId: rule.mockStepId,
     mockStepTitle: rule.mockStepTitle,
     order: rule.order,
-    status: item.status === 'needs-review' ? 'needs-review' : 'missing',
-    simulatedMessage: rule.simulatedMessage,
+    status: flagged ? 'needs-review' : 'missing',
+    // A rule naming an issue code only ever fires for a flagged document, so
+    // its message is already the right one. The GENERAL rules are worded for a
+    // missing document, and using that wording for a document that is present
+    // but flagged would contradict the readiness result beside it.
+    simulatedMessage: flagged
+      ? (rule.reviewMessage ??
+        (rule.issueCode
+          ? rule.simulatedMessage
+          : `Your ${item.title.toLowerCase()} is attached, but it does not match the application yet. In this simulation it is held at this step until that is settled.`))
+      : rule.simulatedMessage,
     reason: issue ? issue.detail : item.reason,
     fixSteps: issue
       ? [issue.resolutionPrompt ?? 'Confirm this document, or use a different one.']
       : item.guidance,
-    ...(issue ? { issueCode: issue.code, issueId: issue.id } : {}),
+    ...(issue
+      ? { issueCode: issue.code, issueId: issue.id, issueResolvable: issue.resolvable }
+      : {}),
   };
 }

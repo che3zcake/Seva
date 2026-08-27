@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -30,19 +30,25 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 }
 
-export function Button({
-  variant = 'primary',
-  loading = false,
-  block = false,
-  icon,
-  children,
-  className = '',
-  disabled,
-  ...rest
-}: ButtonProps) {
+/** forwardRef so callers can move focus here - e.g. after an inline fix
+ *  re-renders the card the button lives in. */
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant = 'primary',
+    loading = false,
+    block = false,
+    icon,
+    children,
+    className = '',
+    disabled,
+    ...rest
+  },
+  ref,
+) {
   return (
     <button
       {...rest}
+      ref={ref}
       disabled={disabled || loading}
       // 48px min height: comfortable to hit on a phone.
       className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-base font-medium transition-colors disabled:cursor-not-allowed ${
@@ -53,7 +59,7 @@ export function Button({
       {children}
     </button>
   );
-}
+});
 
 export function Card({
   children,

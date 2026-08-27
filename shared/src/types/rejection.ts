@@ -17,7 +17,13 @@ export interface RejectionRule {
   mockStepTitle: string;
   /** Explicit ordering. Never rely on array position. */
   order: number;
+  /** Wording for the "nothing attached" case. */
   simulatedMessage: string;
+  /**
+   * Wording when a document IS attached but is flagged. Without this the
+   * missing-case message contradicts readiness in the same payload.
+   */
+  reviewMessage?: string;
 }
 
 export interface RejectionFinding {
@@ -36,6 +42,8 @@ export interface RejectionFinding {
   fixSteps: string[];
   issueCode?: DocumentIssue['code'];
   issueId?: string;
+  /** Whether the citizen can clear this themselves by confirming it. */
+  issueResolvable?: boolean;
 }
 
 export interface RejectionAutopsy {

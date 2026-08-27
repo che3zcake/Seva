@@ -28,8 +28,22 @@ applicationRouter.post('/start', (req, res) => {
 
   const id = sessionIdFrom(req);
   const session = sessionRepository.getOrCreate(id);
-  const { readiness } = readinessFor(session, service);
 
+  // Starting again must not discard work in progress, and must not reopen
+  // something already submitted.
+  const existing = session.application;
+  if (existing?.serviceId === serviceId) {
+    if (existing.status === 'submitted') {
+      throw new ApplicationBlocked(
+        'That application has already been submitted.',
+        'Start a new one with Reset demo.',
+      );
+    }
+    res.json(session);
+    return;
+  }
+
+  const { readiness } = readinessFor(session, service);
   // Throws ApplicationBlocked when anything is still unresolved.
   const application = startApplication(service, session.profile, readiness);
   res.json(sessionRepository.update(id, { application }));

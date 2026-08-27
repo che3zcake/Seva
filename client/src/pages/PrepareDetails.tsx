@@ -26,7 +26,7 @@ const PREPARE_STEPS = [
 const SAMPLE: CitizenProfile = {
   fullName: 'Rahul Sharma',
   dateOfBirth: '1998-07-12',
-  address: '14, Nehru Nagar, Sector 4, Indore, Madhya Pradesh 452001',
+  address: '12-3-456, Vidya Nagar, Khairatabad, Hyderabad, Telangana 500004',
   occupation: 'Salaried employee',
   annualIncome: '186000',
   purpose: 'Education scholarship application',

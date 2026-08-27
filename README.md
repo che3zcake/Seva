@@ -1,53 +1,74 @@
-# Seva — a government application readiness layer
+# Seva — find the failure before the form does
 
-**Know what you need before you start.**
+An **application-preflight layer** for Indian public services, built as an
+independent concept around the income-certificate journey reachable through
+UMANG's Telangana MeeSeva services.
 
-Seva is a preparation layer that sits *before* a government application form.
-It tells a citizen what the application will ask for, checks which documents
-they already have, finds what is missing, flags problems, and only then lets
-them open the form.
+> **Independent prototype.** Not affiliated with, endorsed by, or connected to
+> UMANG, MeeSeva, Telangana or any government body. The service rules, the
+> DigiLocker account and its documents, the reading of an uploaded file and the
+> submission are all synthetic demonstration data. No government system is ever
+> contacted and nothing is submitted anywhere.
 
-> **This is a prototype for demonstration.** Government services, documents,
-> accounts and DigiLocker data shown here are simulated using synthetic data.
-> Seva is an independent demonstration project, not affiliated with,
-> endorsed by, or connected to any government body. Nothing is submitted
-> anywhere.
+## 1. The 60-second path
 
----
+Open the app and press **Start 60-second demo**. No account, no API key, no
+extension, no file needed.
 
-## 1. What it does
+| | |
+| --- | --- |
+| 1 | *"Rahul needs an income certificate for a scholarship."* → **Start 60-second demo** |
+| 2 | **"This simulated journey would first stop at income proof — At: Enclosures"** |
+| 3 | **Fix this first** → adds the built-in synthetic salary slip |
+| 4 | The name on it reads differently → **Confirm this is me** |
+| 5 | **Fix this first** → adds the photograph → **No configured blocker remains** |
+| 6 | **Continue to mock form** → already prefilled, documents already mapped |
+| 7 | **Submit simulation** → a fictional reference, and *"No government system was contacted"* |
+| 8 | **Reset demo** in the header returns to the start |
 
-A judge can open the app and walk this in about two minutes:
+`server/src/__tests__/demoPath.test.ts` asserts every step of that. If it goes
+red, the demo is showing something the build cannot do.
 
-1. Choose a service (Income Certificate).
-2. Answer six questions about themselves.
-3. Connect a simulated DigiLocker and pick documents from it.
-4. See that three of five documents are covered and two are not.
-5. Upload a synthetic income document.
-6. Watch the simulated reader flag a name that does not match.
-7. Confirm it, upload a photograph, and reach **"You're ready to apply."**
-8. Go through a four-step mock form that is already pre-filled.
-9. Attach the prepared documents in one tap each.
-10. Submit — simulated — and get a fake reference number.
+## 2. The problem, and the feature
 
-## 2. The problem
+A checklist tells you *what is required*. It cannot tell you *where your
+documents will fail*. The expensive moment is discovering that after you have
+started — at the enclosures step, nine screens in, with the wrong document.
 
-People start long government forms without knowing what they need. Halfway in
-they hit a question requiring a document they do not have. They stop, go get
-it, come back, and often start over. The time is not lost to *filling* the
-form — it is lost to *discovering the requirement too late*.
+**Rejection Autopsy** answers the question a checklist cannot:
 
-```
-Today                          With Seva
-─────                          ────────────
-Find service                   Choose service
-Start huge form                Understand requirements
-Discover required document     Check existing documents
-Stop                           Retrieve what is available
-Obtain document                Identify missing items
-Return                         Resolve problems
-Continue (or start over)       READY → start application
-```
+> If you applied right now, where would this stop, at which step, and what is
+> the shortest way past it?
+
+`buildRejectionAutopsy(service, readiness)` in
+`server/src/domain/rejectionAutopsy.ts` is a pure function projecting current
+readiness onto the service's configured stops (`rejectionRules` in
+`server/src/data/services.ts`). Its constraints, each with a test:
+
+- Only requirements that are genuinely unsettled can produce a stop.
+- Ordering comes from explicit `order` following the mock form, never array position.
+- A rule naming an `issueCode` only fires when that issue is open, and beats the
+  general rule for the same requirement.
+- `clear` is taken from `readiness.readyToApply` — **never** inferred from an
+  empty findings list, because empty can also mean the rules are incomplete.
+- A requirement that is unsettled with **no configured rule** goes to
+  `unmappedRequirementIds`, and the interface says the preview is unavailable.
+  It never invents a stop and never turns green.
+- Every response carries `simulated: true` and the ruleset version
+  (`RULESET_VERSION`, shown on the card).
+
+Readiness and the autopsy are built from **one** recomputation in
+`sessionReadiness.ts`, so they cannot disagree inside a single response.
+
+The language is deliberate throughout: *configured simulated blocker*, never
+*predicted government rejection*.
+
+### Adding a stop
+
+Append a `RejectionRule` to that service's `rejectionRules`. Give it a
+`mockStepId`/`mockStepTitle` from the service's own `applicationSteps`, an
+`order`, a `simulatedMessage` for the missing case, and — for a requirement that
+can be flagged rather than absent — a `reviewMessage`. No component changes.
 
 ## 3. Architecture
 
@@ -325,7 +346,7 @@ npm run typecheck   # strict TypeScript across all three packages
 npm test
 ```
 
-60 tests covering the parts where being wrong actually costs something:
+84 tests covering the parts where being wrong actually costs something:
 
 - **Readiness engine** — missing/needs-review/ready transitions, information
   requirements blocking readiness, the resolved-issue path, the 100% case
@@ -336,6 +357,10 @@ npm test
 - **API** — validation, readable error bodies, the refusal to start or submit
   early, upload rejection, the extension endpoint, and one test that walks the
   entire journey from empty session to simulated submission
+- **Rejection Autopsy** (`rejectionAutopsy.test.ts`) — stop ordering, issue-specific
+  rules beating general ones, the all-clear coming only from readiness, and the
+  refusal to invent a stop for an unmapped requirement
+- **The demo path** (`demoPath.test.ts`) — the whole 60-second storyboard, end to end
 - **Blindness** (`blindness.test.ts`) — asserts that a citizen's name and the
   name printed on their document appear in the copy they read on their own
   screen and *never* in anything sent to the model. Verified to fail against the

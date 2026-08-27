@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, CheckCircle2, HelpCircle, Wrench } from 'lucide-react';
 import type { RejectionAutopsy, RejectionFinding, ServiceDefinition } from '@seva/shared';
@@ -28,6 +28,16 @@ export function AutopsyCard({
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const [showRest, setShowRest] = useState(false);
+  const actionRef = useRef<HTMLButtonElement>(null);
+  const [justFixed, setJustFixed] = useState(false);
+
+  // After an inline fix the card re-renders with a new stop. Without this,
+  // focus falls to <body> and a keyboard or screen-reader user is stranded.
+  useEffect(() => {
+    if (!justFixed) return;
+    actionRef.current?.focus();
+    setJustFixed(false);
+  }, [justFixed, autopsy.firstFailure?.ruleId]);
 
   const first = autopsy.firstFailure;
   const later = autopsy.findings.slice(1);
@@ -36,8 +46,13 @@ export function AutopsyCard({
     setBusy(true);
     setFailure(null);
     try {
-      if (finding.issueId) {
+      // Only a resolvable issue can be confirmed away. A name-mismatch cannot,
+      // and POSTing it would come back 400 - that one needs a different document.
+      if (finding.issueId && finding.issueResolvable) {
         await resolveIssue(finding.issueId);
+      } else if (finding.issueId) {
+        navigate(`/prepare/${service.id}/documents`);
+        return;
       } else {
         const requirement = service.requirements.find((r) => r.id === finding.requirementId);
         if (requirement?.type === 'information') {
@@ -47,6 +62,7 @@ export function AutopsyCard({
         await addSampleDocument(service.id, finding.requirementId);
       }
       await onChanged();
+      setJustFixed(true);
     } catch (error) {
       setFailure(
         error instanceof ApiError
@@ -81,7 +97,8 @@ export function AutopsyCard({
   }
 
   function fixLabel(finding: RejectionFinding): string {
-    if (finding.issueId) return 'Confirm this is me';
+    if (finding.issueId && finding.issueResolvable) return 'Confirm this is me';
+    if (finding.issueId) return 'Use a different document';
     const requirement = service.requirements.find((r) => r.id === finding.requirementId);
     if (requirement?.type === 'information') return 'Answer this';
     return 'Fix this first';
@@ -111,7 +128,7 @@ export function AutopsyCard({
           </Button>
         </div>
         {failure ? (
-          <p className="mt-4 rounded-xl border border-miss/30 bg-miss-soft p-3 text-sm text-ink">
+          <p role="alert" className="mt-4 rounded-xl border border-miss/30 bg-miss-soft p-3 text-sm text-ink">
             {failure}
           </p>
         ) : null}
@@ -176,14 +193,9 @@ export function AutopsyCard({
         </div>
       ) : null}
 
-      {failure ? (
-        <p className="mt-4 rounded-xl border border-miss/30 bg-miss-soft p-3 text-sm text-ink">
-          {failure}
-        </p>
-      ) : null}
-
       <div className="mt-5">
         <Button
+          ref={actionRef}
           block
           loading={busy}
           icon={<Wrench size={18} aria-hidden />}
@@ -193,12 +205,18 @@ export function AutopsyCard({
         </Button>
       </div>
 
+      {failure ? (
+        <p role="alert" className="mt-4 rounded-xl border border-miss/30 bg-miss-soft p-3 text-sm text-ink">
+          {failure}
+        </p>
+      ) : null}
+
       {later.length > 0 ? (
         <div className="mt-4">
           <button
             type="button"
             onClick={() => setShowRest((open) => !open)}
-            className="text-sm font-medium text-brand underline"
+            className="-mx-2 rounded px-2 py-3 text-sm font-medium text-brand underline"
             aria-expanded={showRest}
           >
             {showRest ? 'Hide' : 'Show'} {later.length} later configured{' '}

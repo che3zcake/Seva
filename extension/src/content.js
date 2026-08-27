@@ -231,6 +231,8 @@
       <div class="note">
         Nothing has left this page. The list above was read here in your browser, and it is only
         sent to Seva when you tap the button.
+        <br><br><strong>Independent prototype.</strong> Seva is not affiliated with this website or
+        with any government body, and its checklist is synthetic demonstration data.
       </div>
     `);
     $('check').addEventListener('click', check);
@@ -286,13 +288,20 @@
       })
       .join('');
 
+    const uncovered = matched.length - known.length;
     show(`
-      <p><strong>${ready} of ${known.length}</strong> documents this page asks for are ready.</p>
+      <p><strong>${ready} of ${matched.length}</strong> documents this page asks for are ready.${
+        uncovered > 0
+          ? ` <span class="muted small">${uncovered} ${uncovered === 1 ? 'is' : 'are'} not covered by this prototype's checklist.</span>`
+          : ''
+      }</p>
       <div style="margin-top:10px">${rows}</div>
       <button class="cta" id="open">${readiness.readyToApply ? 'Open my checklist' : 'Fix what is missing'}</button>
       <div class="note">
-        Readiness came from your Seva checklist. This panel never reads the documents themselves —
-        only which of them exist and what each one is for.
+        <strong>Independent prototype.</strong> This verdict comes from Seva's own synthetic
+        checklist, not from this website and not from any government system. Seva is not affiliated
+        with either. It never reads the documents themselves — only which of them exist and what
+        each one is for.
         ${reply.linked ? '' : '<br><br><strong>Not linked yet.</strong> Open Seva once and this panel will use your real checklist.'}
       </div>
     `);

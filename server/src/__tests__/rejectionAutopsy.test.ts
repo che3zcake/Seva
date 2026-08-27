@@ -128,3 +128,63 @@ describe('every response carries its provenance', () => {
     expect(text).not.toContain('officer');
   });
 });
+
+describe('a flagged document is never described as absent', () => {
+  const FLAGGED_AADHAAR = doc('aadhaar', 'aadhaar', {
+    metadata: { holderName: 'Rahul Kumar Sharma' },
+  });
+
+  it('attaches the open issue even when no rule names its code', () => {
+    // identity-proof has only a general rule. Without the issue attached, the
+    // interface offers "add a document" for a requirement that already has one,
+    // and the stop can never be cleared.
+    const { autopsy } = autopsyFor([FLAGGED_AADHAAR]);
+    const first = autopsy.findings.find((f) => f.requirementId === 'identity-proof');
+
+    expect(first?.issueId).toBeDefined();
+    expect(first?.issueCode).toBe('name-variant');
+    expect(first?.issueResolvable).toBe(true);
+  });
+
+  it('does not claim nothing is attached when something is', () => {
+    const { autopsy, readiness } = autopsyFor([FLAGGED_AADHAAR]);
+    const first = autopsy.findings.find((f) => f.requirementId === 'identity-proof');
+    const item = readiness.items.find((i) => i.requirementId === 'identity-proof');
+
+    // Readiness says a document is matched; the autopsy must not contradict it.
+    expect(item?.matchedDocumentId).toBeDefined();
+    expect(first?.status).toBe('needs-review');
+    expect(first?.simulatedMessage).not.toMatch(/no identity document is attached/i);
+    expect(first?.simulatedMessage).toMatch(/is attached/i);
+  });
+
+  it('still says nothing is attached when nothing is', () => {
+    const { autopsy } = autopsyFor([]);
+    const first = autopsy.findings.find((f) => f.requirementId === 'identity-proof');
+    expect(first?.status).toBe('missing');
+    expect(first?.simulatedMessage).toMatch(/no identity document is attached/i);
+    expect(first?.issueId).toBeUndefined();
+  });
+
+  it('confirming the issue clears the stop instead of repeating it', () => {
+    const before = autopsyFor([FLAGGED_AADHAAR]).autopsy;
+    const stop = before.findings.find((f) => f.requirementId === 'identity-proof');
+    expect(stop?.issueId).toBeDefined();
+
+    const after = autopsyFor([FLAGGED_AADHAAR], profile(), [stop!.issueId!]).autopsy;
+    expect(after.findings.find((f) => f.requirementId === 'identity-proof')).toBeUndefined();
+  });
+
+  it('writes grammatical copy for every document requirement', () => {
+    for (const requirement of service.requirements) {
+      if (requirement.type !== 'document') continue;
+      const flagged = doc(`d-${requirement.id}`, requirement.acceptableDocumentTypes[0]!, {
+        forRequirementId: requirement.id,
+        metadata: { holderName: 'Rahul Kumar Sharma' },
+      });
+      const { autopsy } = autopsyFor([flagged]);
+      const finding = autopsy.findings.find((f) => f.requirementId === requirement.id);
+      expect(finding?.simulatedMessage).not.toMatch(/\bA [aeiou]/);
+    }
+  });
+});
