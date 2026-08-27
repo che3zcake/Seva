@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Paperclip, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Paperclip, Send, Sparkles } from 'lucide-react';
 import type { ApplicationStep } from '@seva/shared';
 import { usePreparation } from '../lib/hooks';
 import { useApp } from '../state/AppContext';
@@ -89,6 +89,22 @@ export function Apply() {
     }
   }
 
+  /** Attaches everything already prepared, in the order the form expects. */
+  async function attachAll(requirementIds: string[]) {
+    if (!application) return;
+    setBusy(true);
+    try {
+      for (const requirementId of requirementIds) {
+        await patchApplication(application.id, { attachRequirementId: requirementId });
+      }
+      toast('All prepared documents attached.');
+    } catch {
+      toast('Some documents could not be attached. Try them one at a time.', 'miss');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function attach(requirementId: string) {
     if (!application) return;
     setBusy(true);
@@ -120,6 +136,14 @@ export function Apply() {
     }
   }
 
+  // How much of this form the preparation already answered. Counted across the
+  // whole form, not just this step, so the number does not jump about.
+  const allFields = steps.flatMap((s) => s.fields);
+  const preparedFields = allFields.filter(
+    (f) => f.prefillFrom && (application.values[f.id] ?? '').trim(),
+  );
+  const outstandingFields = allFields.filter((f) => f.required && !(application.values[f.id] ?? '').trim());
+
   const attachedIds = new Set(application.attachedDocuments.map((d) => d.requirementId));
   const documentItems = readiness.items.filter((item) => item.type === 'document');
   const allAttached = documentItems.every((item) => attachedIds.has(item.requirementId));
@@ -129,11 +153,41 @@ export function Apply() {
     <div className="pb-28 sm:pb-0">
       <Stepper steps={steps.map((s) => ({ id: s.id, title: s.title }))} currentIndex={stepIndex} />
 
-      <header className="mb-6">
-        <p className="text-sm font-medium uppercase tracking-wide text-muted">{service.name}</p>
-        <h1 className="mt-2 text-3xl">{step.title}</h1>
-        <p className="mt-2 text-muted">{step.description}</p>
+      <header className="mb-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted">{service.name}</p>
+        <h1 className="mt-1 text-2xl sm:text-3xl">{step.title}</h1>
+        <p className="mt-1 text-muted">{step.description}</p>
       </header>
+
+      {/* The payoff, stated plainly and kept on screen: this form is shorter
+          than it would have been, and here is exactly by how much. */}
+      <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-ready/30 bg-ready-soft px-4 py-3">
+        <span className="text-ready" aria-hidden>
+          <Sparkles size={16} />
+        </span>
+        <p className="text-sm text-ink">
+          <strong className="font-semibold">
+            {preparedFields.length} of {allFields.length} answers
+          </strong>{' '}
+          already filled from your preparation
+          {application.attachedDocuments.length > 0 ? (
+            <>
+              , and{' '}
+              <strong className="font-semibold">
+                {application.attachedDocuments.length} document
+                {application.attachedDocuments.length === 1 ? '' : 's'}
+              </strong>{' '}
+              attached
+            </>
+          ) : null}
+          .
+        </p>
+        <p className="w-full text-sm text-muted sm:w-auto">
+          {outstandingFields.length === 0
+            ? 'Nothing left for you to type.'
+            : `${outstandingFields.length} left for you.`}
+        </p>
+      </div>
 
       {step.kind === 'fields' ? (
         <Card className="space-y-6 p-5 sm:p-6">
@@ -146,11 +200,8 @@ export function Apply() {
               options={field.options}
               required={field.required}
               placeholder={field.placeholder}
-              helpText={
-                field.prefillFrom && application.values[field.id]
-                  ? `${field.helpText ? `${field.helpText} ` : ''}Filled in from what you prepared.`
-                  : field.helpText
-              }
+              helpText={field.helpText}
+              prepared={Boolean(field.prefillFrom && (application.values[field.id] ?? '').trim())}
               value={valueFor(field.id)}
               error={errors[field.id]}
               onChange={(value) => {
@@ -167,6 +218,24 @@ export function Apply() {
 
       {step.kind === 'documents' ? (
         <div className="space-y-4">
+          {!allAttached ? (
+            <Button
+              block
+              loading={busy}
+              icon={<Paperclip size={18} aria-hidden />}
+              onClick={() =>
+                attachAll(
+                  documentItems
+                    .filter((i) => !attachedIds.has(i.requirementId))
+                    .map((i) => i.requirementId),
+                )
+              }
+            >
+              Attach all {documentItems.filter((i) => !attachedIds.has(i.requirementId)).length}{' '}
+              prepared documents
+            </Button>
+          ) : null}
+
           <ul className="space-y-3">
             {documentItems.map((item) => {
               const attached = attachedIds.has(item.requirementId);

@@ -21,7 +21,7 @@
   --color-info: #1b4965;
   --color-info-soft: #e8eff4;
 
-  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+  --font-display: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
   --font-sans:
     system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
@@ -34,15 +34,25 @@
   body {
     @apply bg-paper text-ink font-sans antialiased;
     /* Comfortable for someone reading carefully, not skimming. */
+    /* Large enough to read without effort at any age; tighter leading than
+       before so more fits on a phone screen without shrinking the text. */
     font-size: 17px;
-    line-height: 1.6;
+    line-height: 1.45;
   }
 
+  /* Display serif carries the large type only. At h3 size a high-contrast
+     serif reads thin and apologetic, so small headings stay in the sans. */
   h1,
-  h2,
-  h3 {
+  h2 {
     @apply font-display tracking-tight;
     text-wrap: balance;
+    line-height: 1.05;
+  }
+
+  h3 {
+    @apply font-sans font-semibold tracking-tight;
+    text-wrap: balance;
+    line-height: 1.25;
   }
 
   p {
@@ -58,6 +68,11 @@
 
   ::selection {
     background: var(--color-brand-soft);
+  }
+
+  button:active:not(:disabled),
+  a:active {
+    transform: translateY(1px);
   }
 }
 

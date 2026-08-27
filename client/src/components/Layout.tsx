@@ -24,7 +24,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </a>
 
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-5 py-4">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <Link to="/" className="flex items-center gap-2.5 text-ink">
             <span
               className="flex size-8 items-center justify-center rounded-lg bg-brand text-white"
@@ -61,12 +61,12 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-5 py-8 sm:py-12">
+      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-4 py-5 sm:px-5 sm:py-8">
         {children}
       </main>
 
       <footer className="border-t border-line bg-surface">
-        <div className="mx-auto max-w-3xl space-y-3 px-5 pb-40 pt-8 text-sm text-muted sm:pb-8">
+        <div className="mx-auto max-w-3xl space-y-2 px-4 pb-32 pt-6 text-sm text-muted sm:px-5 sm:pb-8">
           <p>{PROTOTYPE_DISCLOSURE}</p>
           <p>
             Seva is an independent demonstration project. It is not affiliated with, endorsed

@@ -66,25 +66,25 @@ export function Landing() {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-10">
       <section>
         <p className="text-sm font-medium uppercase tracking-wide text-muted">
           Independent public-service redesign concept
         </p>
-        <h1 className="mt-3 text-4xl leading-[1.1] sm:text-5xl">
+        <h1 className="mt-2 text-[2.6rem] leading-[0.95] sm:text-6xl">
           Find the failure
           <br />
           before the form does.
         </h1>
 
-        <Card className="mt-6 border-brand/30 bg-brand-soft/40 p-5">
+        <Card className="mt-4 border-brand/30 bg-brand-soft/40 p-4">
           <p className="text-lg text-ink">
             Rahul needs an income certificate for a scholarship. Let&rsquo;s check whether he can
             finish before opening the form.
           </p>
         </Card>
 
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
           <Button block loading={busy} icon={<Zap size={18} aria-hidden />} onClick={startDemo}>
             Start 60-second demo
           </Button>
@@ -99,7 +99,7 @@ export function Landing() {
           </div>
         ) : null}
 
-        <p className="mt-6 text-sm text-muted">
+        <p className="mt-4 text-sm text-muted">
           Modelled on the income-certificate journey reachable through UMANG&rsquo;s Telangana
           MeeSeva services. Independent concept — not affiliated with, endorsed by or connected to
           UMANG, MeeSeva or any government body. Every service rule, document, locker and
@@ -109,9 +109,9 @@ export function Landing() {
 
       <section id="how-it-works" className="scroll-mt-8">
         <h2 className="text-2xl">How it works</h2>
-        <ol className="mt-6 space-y-4">
+        <ol className="mt-4 space-y-2.5">
           {STEPS.map((step, index) => (
-            <Card as="li" key={step.title} className="flex gap-4 p-5">
+            <Card as="li" key={step.title} className="flex gap-3.5 p-4">
               <span
                 className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"
                 aria-hidden
@@ -132,17 +132,17 @@ export function Landing() {
 
       <section>
         <h2 className="text-2xl">Why this exists</h2>
-        <p className="mt-3 max-w-xl text-muted">
+        <p className="mt-2 max-w-xl text-muted">
           A checklist tells you what is required. It does not tell you where <em>your</em> documents
           will fail. The expensive moment is finding that out after you have started.
         </p>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <Card className="p-5">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Card className="p-4">
             <h3 className="text-base font-semibold uppercase tracking-wide text-muted">
               How it usually goes
             </h3>
-            <ol className="mt-4 space-y-2 text-sm">
+            <ol className="mt-3 space-y-1.5 text-sm">
               {TODAY.map((line, index) => (
                 <li key={line} className="flex gap-3">
                   <span className="w-4 shrink-0 text-right text-muted" aria-hidden>
@@ -154,11 +154,11 @@ export function Landing() {
             </ol>
           </Card>
 
-          <Card className="border-brand/30 bg-brand-soft/40 p-5">
+          <Card className="border-brand/30 bg-brand-soft/40 p-4">
             <h3 className="text-base font-semibold uppercase tracking-wide text-brand-dark">
               With Seva
             </h3>
-            <ol className="mt-4 space-y-2 text-sm">
+            <ol className="mt-3 space-y-1.5 text-sm">
               {INSTEAD.map((line, index) => (
                 <li key={line} className="flex gap-3">
                   <span className="w-4 shrink-0 text-right text-muted" aria-hidden>
@@ -173,7 +173,7 @@ export function Landing() {
       </section>
 
       <section>
-        <Card className="p-6">
+        <Card className="p-5">
           <h2 className="text-xl">What is real, and what is not</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <div>
