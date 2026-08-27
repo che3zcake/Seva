@@ -40,7 +40,10 @@ export function Assistant() {
   const [history, setHistory] = useState<Exchange[]>([]);
   const [loading, setLoading] = useState(false);
 
-  if (pathname.startsWith('/demo/')) return null;
+  // Not on the fictional portal, and not on the landing page - there is no
+  // journey to ask about yet, and a floating pill there sits on top of the
+  // synthetic-data disclosure, which is the one thing that must stay readable.
+  if (pathname.startsWith('/demo/') || pathname === '/') return null;
 
   const { serviceId, context } = describeContext(pathname);
 
@@ -77,10 +80,11 @@ export function Assistant() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 z-40 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-3 text-sm font-medium text-ink shadow-lg hover:border-brand hover:text-brand sm:bottom-6"
+        aria-label="Need help?"
+        className="fixed bottom-24 right-4 z-40 inline-flex size-12 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg hover:border-brand hover:text-brand sm:bottom-6 sm:size-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-sm sm:font-medium"
       >
-        <MessageCircleQuestion size={18} aria-hidden />
-        Need help?
+        <MessageCircleQuestion size={20} aria-hidden />
+        <span className="hidden sm:inline">Need help?</span>
       </button>
 
       <Sheet
