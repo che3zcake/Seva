@@ -1,9 +1,15 @@
 # Seva Pre-Mortem with Proof
 
-**Status:** Proposed for implementation after user review  
+**Status:** Superseded for the hackathon time box by `2026-08-27-umang-application-preflight-design.md`
 **Date:** 2026-08-27  
-**Time box:** 24 hours  
+**Time box:** Post-submission roadmap
 **Product line:** Fail here, not at the government counter—and see exactly what Seva handled.
+
+> The official builder brief and organizer video changed the 24-hour cut line.
+> Rejection Autopsy remains the core idea; Privacy X-ray, signed receipts, QR,
+> and the verifier move to the post-submission roadmap so the first-round build
+> can maximize citizen clarity, platform specificity, deployment reliability,
+> and demo quality.
 
 ## 1. Decision
 
