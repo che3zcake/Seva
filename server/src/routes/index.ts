@@ -8,6 +8,7 @@ import { readinessRouter } from './readiness.js';
 import { documentsRouter } from './documents.js';
 import { aiRouter } from './ai.js';
 import { applicationRouter } from './application.js';
+import { demoRouter } from './demo.js';
 import { env } from '../config/env.js';
 
 /** Sessions are identified by a header the client keeps in localStorage. */
@@ -42,3 +43,4 @@ apiRouter.use('/readiness', readinessRouter);
 apiRouter.use('/documents', documentsRouter);
 apiRouter.use('/ai', aiRouter);
 apiRouter.use('/application', applicationRouter);
+apiRouter.use('/demo', demoRouter);

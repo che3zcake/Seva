@@ -267,7 +267,7 @@ export function Apply() {
 
           {isLast ? (
             <Button block loading={busy} icon={<Send size={18} aria-hidden />} onClick={submit}>
-              Submit application
+              Submit simulation
             </Button>
           ) : (
             <Button

@@ -45,10 +45,10 @@ export function Complete() {
       </Card>
 
       <Card className="mt-6 border-info/30 bg-info-soft p-5">
-        <h2 className="text-lg text-info">This submission is simulated</h2>
+        <h2 className="text-lg text-info">No government system was contacted</h2>
         <p className="mt-2 text-ink">
-          No government application was actually submitted. No data left this prototype, no account
-          was contacted, and the reference number above is invented.
+          This submission is simulated. No government application was submitted, no data left this
+          prototype, no account was contacted, and the reference number above is invented.
         </p>
       </Card>
 

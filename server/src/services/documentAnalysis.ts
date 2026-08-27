@@ -54,6 +54,36 @@ const NAME_BEARING: ReadonlySet<DocumentRequirement['category']> = new Set([
   'age',
 ]);
 
+/**
+ * A built-in stand-in file for each kind of requirement.
+ *
+ * The demo path must not depend on a judge having a suitable file to hand, or
+ * on an operating-system file picker working inside a screen recording. These
+ * go through exactly the same analysis as a real upload, so the fix flow a
+ * judge sees is the fix flow a citizen would get.
+ */
+const SAMPLE_FILES: Record<string, { fileName: string; mimeType: string; sizeBytes: number }> = {
+  income: { fileName: 'salary-slip-june-2026.pdf', mimeType: 'application/pdf', sizeBytes: 184_320 },
+  photo: { fileName: 'passport-photo.jpg', mimeType: 'image/jpeg', sizeBytes: 92_160 },
+  identity: { fileName: 'identity-card.jpg', mimeType: 'image/jpeg', sizeBytes: 145_408 },
+  address: { fileName: 'electricity-bill-june-2026.pdf', mimeType: 'application/pdf', sizeBytes: 121_856 },
+  age: { fileName: 'class-10-certificate.pdf', mimeType: 'application/pdf', sizeBytes: 210_944 },
+};
+
+export function sampleFileFor(requirement: DocumentRequirement): {
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+} {
+  return (
+    SAMPLE_FILES[requirement.category] ?? {
+      fileName: `${requirement.id}-sample.pdf`,
+      mimeType: 'application/pdf',
+      sizeBytes: 150_000,
+    }
+  );
+}
+
 export interface AnalyseUploadInput {
   requirement: DocumentRequirement;
   profileName: string;

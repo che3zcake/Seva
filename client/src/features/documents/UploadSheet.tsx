@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { AlertTriangle, Check, Upload } from 'lucide-react';
+import { AlertTriangle, Check, FileText, Upload } from 'lucide-react';
 import type { DocumentAnalysis, DocumentRequirement } from '@seva/shared';
 import { Sheet } from '../../components/ui/Overlay';
 import { Button, Spinner } from '../../components/ui/Primitives';
@@ -21,7 +21,7 @@ export function UploadSheet({
   requirement: DocumentRequirement | null;
   onUsed: () => Promise<void>;
 }) {
-  const { uploadDocument } = useApp();
+  const { uploadDocument, addSampleDocument } = useApp();
   const inputRef = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState<Stage>('choose');
   const [file, setFile] = useState<File | null>(null);
@@ -38,6 +38,24 @@ export function UploadSheet({
   function close() {
     reset();
     onClose();
+  }
+
+  /** No file picker involved - the same analysis on a built-in descriptor. */
+  async function useSample() {
+    if (!requirement) return;
+    setStage('analysing');
+    try {
+      const result = await addSampleDocument(serviceId, requirement.id);
+      setAnalysis(result.analysis);
+      setStage('result');
+    } catch (error) {
+      setFailure(
+        error instanceof ApiError
+          ? { message: error.message, action: error.action }
+          : { message: 'We could not add the sample.', action: 'Try again.' },
+      );
+      setStage('failed');
+    }
   }
 
   async function send(chosen: File) {
@@ -86,12 +104,21 @@ export function UploadSheet({
             }}
           />
 
+          <Button block icon={<FileText size={18} aria-hidden />} onClick={useSample}>
+            Use the built-in sample
+          </Button>
+          <p className="-mt-2 text-sm text-muted">
+            A synthetic document written for this demo, so you do not need a file to hand. It goes
+            through exactly the same checks as one you upload.
+          </p>
+
           <Button
+            variant="secondary"
             block
             icon={<Upload size={18} aria-hidden />}
             onClick={() => inputRef.current?.click()}
           >
-            Choose a file
+            Choose a file instead
           </Button>
 
           {requirement ? (

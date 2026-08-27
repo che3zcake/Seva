@@ -11,6 +11,7 @@ import {
 import type {
   Application,
   CitizenProfile,
+  RejectionAutopsy,
   DigiLockerAccount,
   DigiLockerDocument,
   Document,
@@ -23,7 +24,12 @@ import { ApiError, apiGet, apiSend, apiUpload, clearSession } from '../api/clien
 
 interface ReadinessResponse {
   readiness: ReadinessResult;
+  autopsy: RejectionAutopsy;
   session: SessionState;
+}
+
+interface SeedResponse extends ReadinessResponse {
+  serviceId: string;
 }
 
 interface SubmitResponse {
@@ -37,6 +43,7 @@ interface AppValue {
   session: SessionState | null;
   service: ServiceDefinition | null;
   readiness: ReadinessResult | null;
+  autopsy: RejectionAutopsy | null;
   booting: boolean;
   bootError: ApiError | null;
 
@@ -54,6 +61,13 @@ interface AppValue {
     requirementId: string,
     file: File,
   ) => Promise<{ document: Document; analysis: DocumentAnalysis }>;
+  /** Adds the built-in synthetic document, so the demo needs no file picker. */
+  addSampleDocument: (
+    serviceId: string,
+    requirementId: string,
+  ) => Promise<{ document: Document; analysis: DocumentAnalysis }>;
+  seedDemo: () => Promise<string>;
+  resetDemo: () => Promise<void>;
   resolveIssue: (issueId: string) => Promise<void>;
   startApplication: (serviceId: string) => Promise<Application>;
   patchApplication: (
@@ -81,6 +95,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionState | null>(null);
   const [service, setService] = useState<ServiceDefinition | null>(null);
   const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
+  const [autopsy, setAutopsy] = useState<RejectionAutopsy | null>(null);
   const [booting, setBooting] = useState(true);
   const [bootError, setBootError] = useState<ApiError | null>(null);
   const [bootNonce, setBootNonce] = useState(0);
@@ -134,6 +149,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const refreshReadiness = useCallback(async (serviceId: string) => {
     const response = await apiGet<ReadinessResponse>(`/readiness/${serviceId}`);
     setReadiness(response.readiness);
+    setAutopsy(response.autopsy);
     setSession(response.session);
     return response.readiness;
   }, []);
@@ -177,6 +193,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const addSampleDocument = useCallback(async (serviceId: string, requirementId: string) => {
+    const response = await apiSend<{
+      document: Document;
+      analysis: DocumentAnalysis;
+      session: SessionState;
+    }>('/documents/sample', 'POST', { serviceId, requirementId });
+    setSession(response.session);
+    return { document: response.document, analysis: response.analysis };
+  }, []);
+
+  /** One tap to the state the demo starts from. */
+  const seedDemo = useCallback(async () => {
+    const response = await apiSend<SeedResponse>('/demo/seed', 'POST');
+    setSession(response.session);
+    setReadiness(response.readiness);
+    setAutopsy(response.autopsy);
+    return response.serviceId;
+  }, []);
+
+  const resetDemo = useCallback(async () => {
+    const fresh = await apiSend<SessionState>('/demo/reset', 'POST');
+    setSession(fresh);
+    setReadiness(null);
+    setAutopsy(null);
+  }, []);
+
   const resolveIssue = useCallback(async (issueId: string) => {
     setSession(await apiSend<SessionState>('/readiness/resolve-issue', 'POST', { issueId }));
   }, []);
@@ -207,6 +249,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearSession();
     setService(null);
     setReadiness(null);
+    setAutopsy(null);
     setSession(await apiGet<SessionState>('/session'));
   }, []);
 
@@ -215,6 +258,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       session,
       service,
       readiness,
+      autopsy,
       booting,
       bootError,
       loadService,
@@ -224,6 +268,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectDigiLockerDocuments,
       removeDocument,
       uploadDocument,
+      addSampleDocument,
+      seedDemo,
+      resetDemo,
       resolveIssue,
       startApplication,
       patchApplication,
@@ -235,6 +282,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       session,
       service,
       readiness,
+      autopsy,
       booting,
       bootError,
       loadService,
@@ -244,6 +292,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectDigiLockerDocuments,
       removeDocument,
       uploadDocument,
+      addSampleDocument,
+      seedDemo,
+      resetDemo,
       resolveIssue,
       startApplication,
       patchApplication,

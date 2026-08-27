@@ -1,71 +1,110 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, FileCheck2, FolderSearch, PlayCircle } from 'lucide-react';
-import { Card, buttonClasses } from '../components/ui/Primitives';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, FileCheck2, FolderSearch, PlayCircle, Zap } from 'lucide-react';
+import { Button, Card, ErrorNotice, buttonClasses } from '../components/ui/Primitives';
+import { useApp } from '../state/AppContext';
+import { ApiError } from '../api/client';
 
 const STEPS = [
   {
     icon: FolderSearch,
-    title: 'Choose your service',
-    body: 'Pick what you are applying for. We show you what it actually asks for, in plain words.',
+    title: 'Rehearse the journey',
+    body: 'Before you open the form, we run your documents against the checklist the application uses.',
   },
   {
     icon: FileCheck2,
-    title: 'Prepare your documents',
-    body: 'See what you already have, find what is missing, and sort out problems before they cost you time.',
+    title: 'See where it stops',
+    body: 'One clear answer: the first place this journey halts, at which step, and the shortest way past it.',
   },
   {
     icon: PlayCircle,
-    title: 'Start when you are ready',
-    body: 'Open the form knowing every document is in hand and every answer is decided.',
+    title: 'Then start, once',
+    body: 'Fix it here, and the same preparation flows straight into a prefilled application.',
   },
 ];
 
 const TODAY = [
-  'Find the service',
-  'Start a long form',
-  'Reach question 14',
-  'Discover you need an income document',
+  'Open the application',
+  'Fill in nine screens',
+  'Reach the enclosures step',
+  'Discover the income document is wrong',
   'Stop',
-  'Go get it',
-  'Come back',
-  'Start over',
+  'Come back another day',
+  'Start again',
 ];
 
 const INSTEAD = [
-  'Choose the service',
-  'See everything it needs',
-  'Check what you already have',
-  'Pull in what you can',
-  'Fix what is wrong',
-  'You are ready',
-  'Start the form once',
+  'Check before starting',
+  'See the first stop immediately',
+  'Fix that one thing',
+  'Re-check',
+  'Ready',
+  'Fill the form once',
 ];
 
 export function Landing() {
+  const navigate = useNavigate();
+  const { seedDemo } = useApp();
+  const [busy, setBusy] = useState(false);
+  const [failure, setFailure] = useState<ApiError | null>(null);
+
+  async function startDemo() {
+    setBusy(true);
+    setFailure(null);
+    try {
+      const serviceId = await seedDemo();
+      navigate(`/prepare/${serviceId}/readiness`);
+    } catch (error) {
+      setFailure(
+        error instanceof ApiError
+          ? error
+          : new ApiError('We could not start the demo.', 'Try again in a moment.', 'demo'),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-16">
       <section>
-        <h1 className="text-4xl leading-[1.1] sm:text-5xl">
-          Know what you need
-          <br />
-          before you start.
-        </h1>
-        <p className="mt-5 max-w-xl text-lg text-muted">
-          Check your documents, find what&rsquo;s missing, and prepare your application before
-          spending time on a long government form.
+        <p className="text-sm font-medium uppercase tracking-wide text-muted">
+          Independent public-service redesign concept
         </p>
+        <h1 className="mt-3 text-4xl leading-[1.1] sm:text-5xl">
+          Find the failure
+          <br />
+          before the form does.
+        </h1>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link to="/services" className={buttonClasses('primary', true)}>
-            <ArrowRight size={18} aria-hidden />
-            Check an application
+        <Card className="mt-6 border-brand/30 bg-brand-soft/40 p-5">
+          <p className="text-lg text-ink">
+            Rahul needs an income certificate for a scholarship. Let&rsquo;s check whether he can
+            finish before opening the form.
+          </p>
+        </Card>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Button block loading={busy} icon={<Zap size={18} aria-hidden />} onClick={startDemo}>
+            Start 60-second demo
+          </Button>
+          <Link to="/services" className={buttonClasses('secondary', true)}>
+            Explore from the beginning
           </Link>
-          <a href="#how-it-works" className={buttonClasses('secondary', true)}>
-            See how it works
-          </a>
         </div>
 
-        <p className="mt-6 text-sm text-muted">Prototype using synthetic government-service data.</p>
+        {failure ? (
+          <div className="mt-5">
+            <ErrorNotice message={failure.message} action={failure.action} onRetry={startDemo} />
+          </div>
+        ) : null}
+
+        <p className="mt-6 text-sm text-muted">
+          Modelled on the income-certificate journey reachable through UMANG&rsquo;s Telangana
+          MeeSeva services. Independent concept — not affiliated with, endorsed by or connected to
+          UMANG, MeeSeva or any government body. Every service rule, document, locker and
+          submission here is synthetic, and no live system is contacted.
+        </p>
       </section>
 
       <section id="how-it-works" className="scroll-mt-8">
@@ -94,8 +133,8 @@ export function Landing() {
       <section>
         <h2 className="text-2xl">Why this exists</h2>
         <p className="mt-3 max-w-xl text-muted">
-          Most of the time lost to a government application is not spent filling it in. It is spent
-          starting it, finding out something is missing, and coming back to start again.
+          A checklist tells you what is required. It does not tell you where <em>your</em> documents
+          will fail. The expensive moment is finding that out after you have started.
         </p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -109,7 +148,7 @@ export function Landing() {
                   <span className="w-4 shrink-0 text-right text-muted" aria-hidden>
                     {index + 1}
                   </span>
-                  <span className={index >= 3 && index <= 6 ? 'text-miss' : 'text-ink'}>{line}</span>
+                  <span className={index >= 3 && index <= 5 ? 'text-miss' : 'text-ink'}>{line}</span>
                 </li>
               ))}
             </ol>
@@ -125,7 +164,7 @@ export function Landing() {
                   <span className="w-4 shrink-0 text-right text-muted" aria-hidden>
                     {index + 1}
                   </span>
-                  <span className={index === 5 ? 'font-medium text-ready' : 'text-ink'}>{line}</span>
+                  <span className={index === 4 ? 'font-medium text-ready' : 'text-ink'}>{line}</span>
                 </li>
               ))}
             </ol>
@@ -135,15 +174,23 @@ export function Landing() {
 
       <section>
         <Card className="p-6">
-          <h2 className="text-xl">What this prototype is</h2>
-          <p className="mt-3 text-muted">
-            Seva is a preparation layer that sits before an application, not another portal and
-            not a chatbot. This build demonstrates one service end to end using invented data: the
-            requirements, the locker, the documents and the submission are all simulated.
-          </p>
-          <p className="mt-3 text-muted">
-            Nothing here is submitted anywhere, and no real account is ever contacted.
-          </p>
+          <h2 className="text-xl">What is real, and what is not</h2>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="font-medium text-ink">Real</dt>
+              <dd className="text-muted">
+                The checklist engine, the document matching, the stop ordering and the gate that
+                keeps you out of the form. All deterministic, all tested.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-medium text-ink">Simulated</dt>
+              <dd className="text-muted">
+                The service rules, the DigiLocker account and its documents, the reading of an
+                uploaded file, the application, and the submission. Nothing is sent anywhere.
+              </dd>
+            </div>
+          </dl>
         </Card>
       </section>
     </div>

@@ -13,8 +13,8 @@ readinessRouter.get('/:serviceId', (req, res) => {
   const service = findService(req.params.serviceId);
   if (!service) throw new NotFound('We do not have that service in this prototype.');
   const session = sessionRepository.getOrCreate(sessionIdFrom(req));
-  const { readiness, session: updated } = readinessFor(session, service);
-  res.json({ readiness, session: updated });
+  const { readiness, autopsy, session: updated } = readinessFor(session, service);
+  res.json({ readiness, autopsy, session: updated });
 });
 
 /** Same answer, but lets the client save profile answers in the same call. */
@@ -28,8 +28,8 @@ readinessRouter.post('/check', (req, res) => {
   if (profile) {
     session = sessionRepository.update(id, { profile: setProfile(session, profile) });
   }
-  const { readiness, session: updated } = readinessFor(session, service);
-  res.json({ readiness, session: updated });
+  const { readiness, autopsy, session: updated } = readinessFor(session, service);
+  res.json({ readiness, autopsy, session: updated });
 });
 
 readinessRouter.patch('/profile', (req, res) => {
@@ -73,7 +73,7 @@ readinessRouter.post('/from-page', (req, res) => {
   if (!service) throw new NotFound('We do not have that service in this prototype.');
 
   const session = sessionRepository.getOrCreate(sessionIdFrom(req));
-  const { readiness } = readinessFor(session, service);
+  const { readiness, autopsy } = readinessFor(session, service);
 
   const matched: { detected: string; item: ReadinessItem | null }[] = detectedRequirements.map(
     (detected) => {
@@ -88,6 +88,7 @@ readinessRouter.post('/from-page', (req, res) => {
 
   res.json({
     readiness,
+    autopsy,
     matched,
     unmatched: matched.filter((entry) => entry.item === null).map((entry) => entry.detected),
   });

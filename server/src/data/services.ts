@@ -1,7 +1,119 @@
-import type { ServiceDefinition } from '@seva/shared';
+import type { RejectionRule, ServiceDefinition } from '@seva/shared';
 
 const PROTOTYPE_NOTICE =
-  'Simulated service. The requirements below are demonstration data written for this prototype, not an official checklist.';
+  'Independent concept. Not affiliated with, endorsed by, or connected to UMANG, MeeSeva or any government body. The checklist below is synthetic demonstration data written for this prototype, not an official list of requirements.';
+
+/** Bump when the synthetic checklist or its stops change. Shown with every verdict. */
+export const RULESET_VERSION = 'synthetic-2026.08-v1';
+
+/**
+ * Where the simulated journey stops, and in what order.
+ *
+ * `order` follows the mock form, not this array. A rule naming an issue code
+ * only fires when that issue is actually open, and takes precedence over the
+ * general rule for the same requirement.
+ */
+const INCOME_CERTIFICATE_STOPS: RejectionRule[] = [
+  {
+    id: 'stop-full-name',
+    requirementId: 'info-full-name',
+    mockStepId: 'personal',
+    mockStepTitle: 'Personal details',
+    order: 10,
+    simulatedMessage: 'The form cannot be started without the applicant name.',
+  },
+  {
+    id: 'stop-dob',
+    requirementId: 'info-dob',
+    mockStepId: 'personal',
+    mockStepTitle: 'Personal details',
+    order: 11,
+    simulatedMessage: 'Date of birth is a mandatory field on this step.',
+  },
+  {
+    id: 'stop-address',
+    requirementId: 'info-address',
+    mockStepId: 'personal',
+    mockStepTitle: 'Personal details',
+    order: 12,
+    simulatedMessage: 'The address decides which office receives the application.',
+  },
+  {
+    id: 'stop-occupation',
+    requirementId: 'info-occupation',
+    mockStepId: 'application-details',
+    mockStepTitle: 'Application details',
+    order: 20,
+    simulatedMessage: 'Occupation decides which income document is expected.',
+  },
+  {
+    id: 'stop-income-figure',
+    requirementId: 'info-annual-income',
+    mockStepId: 'application-details',
+    mockStepTitle: 'Application details',
+    order: 21,
+    simulatedMessage: 'The declared annual income is the figure the certificate states.',
+  },
+  {
+    id: 'stop-purpose',
+    requirementId: 'info-purpose',
+    mockStepId: 'application-details',
+    mockStepTitle: 'Application details',
+    order: 22,
+    simulatedMessage: 'The stated purpose is printed on the certificate.',
+  },
+  {
+    id: 'stop-identity',
+    requirementId: 'identity-proof',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 30,
+    simulatedMessage: 'No identity document is attached to this application.',
+  },
+  {
+    id: 'stop-address-proof',
+    requirementId: 'address-proof',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 31,
+    simulatedMessage: 'No address document is attached to this application.',
+  },
+  {
+    id: 'stop-age',
+    requirementId: 'age-proof',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 32,
+    simulatedMessage: 'No date-of-birth document is attached to this application.',
+  },
+  {
+    id: 'stop-income-proof-name',
+    requirementId: 'income-proof',
+    issueCode: 'name-variant',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 33,
+    simulatedMessage:
+      'The name on the income document is written differently from the name on the application. In this simulation the enclosure is held for verification.',
+  },
+  {
+    id: 'stop-income-proof',
+    requirementId: 'income-proof',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 33,
+    simulatedMessage:
+      'No income document is attached. In this simulation the application cannot proceed past the enclosures step without one.',
+  },
+  {
+    id: 'stop-photograph',
+    requirementId: 'photograph',
+    mockStepId: 'documents',
+    mockStepTitle: 'Enclosures',
+    order: 34,
+    simulatedMessage: 'A passport-size photograph is printed on the certificate and is not attached.',
+  },
+];
 
 /**
  * Adding service #2 should mean adding an object to this array - nothing else.
@@ -13,12 +125,14 @@ export const SERVICES: ServiceDefinition[] = [
     id: 'income-certificate',
     name: 'Income Certificate',
     shortDescription:
-      'A certificate stating your yearly household income. Often asked for by scholarships, fee waivers and welfare schemes.',
+      'A certificate stating your yearly household income. Asked for by scholarships, fee waivers and welfare schemes.',
     category: 'Certificates',
-    jurisdiction: 'State (simulated)',
+    jurisdiction: 'Telangana MeeSeva, reached through UMANG (simulated)',
     prototypeNotice: PROTOTYPE_NOTICE,
     status: 'available',
     estimatedMinutes: 12,
+    rulesetVersion: RULESET_VERSION,
+    rejectionRules: INCOME_CERTIFICATE_STOPS,
     requirements: [
       {
         id: 'identity-proof',
@@ -333,6 +447,7 @@ export const SERVICES: ServiceDefinition[] = [
     prototypeNotice: PROTOTYPE_NOTICE,
     status: 'coming-soon',
     estimatedMinutes: 25,
+    rulesetVersion: RULESET_VERSION,
     requirements: [],
     applicationSteps: [],
   },
@@ -345,6 +460,7 @@ export const SERVICES: ServiceDefinition[] = [
     prototypeNotice: PROTOTYPE_NOTICE,
     status: 'coming-soon',
     estimatedMinutes: 20,
+    rulesetVersion: RULESET_VERSION,
     requirements: [],
     applicationSteps: [],
   },
@@ -357,6 +473,7 @@ export const SERVICES: ServiceDefinition[] = [
     prototypeNotice: PROTOTYPE_NOTICE,
     status: 'coming-soon',
     estimatedMinutes: 18,
+    rulesetVersion: RULESET_VERSION,
     requirements: [],
     applicationSteps: [],
   },

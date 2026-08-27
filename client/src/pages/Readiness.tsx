@@ -13,6 +13,7 @@ import {
 } from '../components/ui/Primitives';
 import { StatusIndicator } from '../components/ui/Status';
 import { Stepper } from '../components/Stepper';
+import { AutopsyCard } from '../features/autopsy/AutopsyCard';
 
 const PREPARE_STEPS = [
   { id: 'details', title: 'About you' },
@@ -23,8 +24,8 @@ const PREPARE_STEPS = [
 export function Readiness() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
-  const { startApplication } = useApp();
-  const { service, readiness, loading, error, reload } = usePreparation(serviceId);
+  const { startApplication, refreshReadiness } = useApp();
+  const { service, readiness, autopsy, loading, error, reload } = usePreparation(serviceId);
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<ApiError | null>(null);
 
@@ -57,14 +58,32 @@ export function Readiness() {
       <Stepper steps={PREPARE_STEPS} currentIndex={2} />
 
       <p className="text-sm font-medium uppercase tracking-wide text-muted">{service.name}</p>
+      {/* When the autopsy is answering, it is the only verdict on screen. The
+          page heading sets it up rather than competing with it. */}
       <h1 className="mt-2 text-3xl sm:text-4xl">
-        {ready ? "You're ready to apply." : "You're not ready yet."}
+        {ready
+          ? "You're ready to apply."
+          : autopsy
+            ? 'Here is where this would stop.'
+            : "You're not ready yet."}
       </h1>
       <p className="mt-3 text-lg text-muted">{readiness.summary}</p>
 
+      {autopsy ? (
+        <div className="mt-8">
+          <AutopsyCard
+            service={service}
+            autopsy={autopsy}
+            onChanged={async () => {
+              if (serviceId) await refreshReadiness(serviceId);
+            }}
+          />
+        </div>
+      ) : null}
+
       {/* The verdict, stated once and unmistakably. */}
       <Card
-        className={`mt-8 p-6 ${
+        className={`mt-6 p-6 ${
           ready ? 'border-ready/40 bg-ready-soft' : 'border-warn/40 bg-warn-soft'
         }`}
       >
@@ -166,12 +185,15 @@ export function Readiness() {
               Start application
             </Button>
           ) : (
+            // The autopsy card already owns the primary action. This becomes
+            // the way into the full checklist, not a second "fix" button.
             <Button
               block
+              variant={autopsy?.firstFailure ? 'secondary' : 'primary'}
               icon={<Wrench size={18} aria-hidden />}
               onClick={() => navigate(`/prepare/${serviceId}/documents`)}
             >
-              Fix remaining items
+              {autopsy?.firstFailure ? 'Open the full checklist' : 'Fix remaining items'}
             </Button>
           )}
         </div>

@@ -1,15 +1,21 @@
-import { Link, useLocation } from 'react-router-dom';
-import type { ReactNode } from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState, type ReactNode } from 'react';
+import { RotateCcw, ShieldCheck } from 'lucide-react';
+import { useApp } from '../state/AppContext';
 
 export const PROTOTYPE_DISCLOSURE =
   'Prototype for demonstration. Government services, documents, accounts and DigiLocker data shown here are simulated using synthetic data.';
 
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { resetDemo } = useApp();
+  const [resetting, setResetting] = useState(false);
   const isPortalDemo = pathname.startsWith('/demo/');
 
   if (isPortalDemo) return <>{children}</>;
+
+  const onHome = pathname === '/';
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -28,9 +34,30 @@ export function Layout({ children }: { children: ReactNode }) {
             </span>
             <span className="font-display text-xl tracking-tight">Seva</span>
           </Link>
-          <span className="rounded-full border border-line bg-paper px-3 py-1 text-xs font-medium text-muted">
-            Prototype
-          </span>
+          <div className="flex items-center gap-2">
+            {onHome ? null : (
+              <button
+                type="button"
+                disabled={resetting}
+                onClick={async () => {
+                  setResetting(true);
+                  try {
+                    await resetDemo();
+                    navigate('/');
+                  } finally {
+                    setResetting(false);
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-brand hover:text-brand disabled:opacity-50"
+              >
+                <RotateCcw size={13} aria-hidden />
+                {resetting ? 'Resetting…' : 'Reset demo'}
+              </button>
+            )}
+            <span className="rounded-full border border-line bg-paper px-3 py-1 text-xs font-medium text-muted">
+              Prototype
+            </span>
+          </div>
         </div>
       </header>
 

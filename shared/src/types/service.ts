@@ -1,4 +1,5 @@
 import type { DocumentType } from './document.js';
+import type { RejectionRule } from './rejection.js';
 
 export type RequirementCategory =
   | 'identity'
@@ -90,6 +91,10 @@ export interface ServiceDefinition {
   estimatedMinutes: number;
   requirements: Requirement[];
   applicationSteps: ApplicationStep[];
+  /** Version of the synthetic checklist, surfaced with every verdict. */
+  rulesetVersion: string;
+  /** Ordered configured stops for the rejection preview. */
+  rejectionRules?: RejectionRule[];
 }
 
 /** Trimmed shape for the service picker. */

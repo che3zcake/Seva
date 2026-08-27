@@ -10,7 +10,8 @@ import type { CitizenProfile } from '@seva/shared';
 export const DEMO_CITIZEN_NAME = 'Rahul Sharma';
 export const DEMO_CITIZEN_LONG_NAME = 'Rahul Kumar Sharma';
 
-export const DEMO_ADDRESS = '14, Nehru Nagar, Sector 4, Indore, Madhya Pradesh 452001';
+export const DEMO_ADDRESS =
+  '12-3-456, Vidya Nagar, Khairatabad, Hyderabad, Telangana 500004';
 
 /** A fresh session starts almost empty - the citizen fills this in. */
 export function createEmptyProfile(): CitizenProfile {
